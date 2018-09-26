@@ -1,5 +1,12 @@
 #Ignore File Types
+*.csv
+*.pyc
+*sqlite3
+
+
+
 
 #Ignore Directories
 node_modules/
 dist/
+_pycache_
