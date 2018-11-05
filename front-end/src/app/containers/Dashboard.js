@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 
-import Dashboard from '../components/Dashboard';
+import { Dashboard } from '../components';
 
 const mapStateToProps = (state, props) => ({
     username: state.username
@@ -12,6 +12,4 @@ const mapDispatchToProps = dispatch => ({
 
 });
 
-const DashboardContainer = connect(mapStateToProps, mapDispatchToProps)(Dashboard);
-
-export default withRouter(DashboardContainer);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Dashboard));

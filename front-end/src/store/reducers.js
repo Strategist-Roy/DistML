@@ -1,7 +1,7 @@
 import C from '../constants';
 import { combineReducers } from 'redux';
 
-export const working = (state = false, action) => {
+const working = (state = false, action) => {
 
     switch(action.type) {
         case C.TOGGLE_WORK:
@@ -11,7 +11,7 @@ export const working = (state = false, action) => {
     }
 };
 
-export const username = (state = null, action) => {
+const username = (state = null, action) => {
     switch(action.type) {
         case C.LOGIN:
             return action.payload;
@@ -20,7 +20,17 @@ export const username = (state = null, action) => {
     }
 }
 
+const navbarStatus = (state = false, action) => {
+    switch(action.type) {
+        case C.TOGGLE_NAVBAR:
+            return !state;
+        default:
+            return state;
+    }
+}
+
 export default combineReducers({
     username,
+    navbarStatus,
     working,
 });

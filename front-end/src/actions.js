@@ -1,6 +1,6 @@
 import C from './constants';
 
-export const login = (credentials, history) => dispatch => {
+export const loginAction = (credentials, history) => dispatch => {
     
     dispatch({
         type: C.LOGIN,
@@ -9,3 +9,5 @@ export const login = (credentials, history) => dispatch => {
 
     history.push("/");
 }
+
+export const toggleNavbarAction = () => ({ type: C.TOGGLE_NAVBAR });

@@ -1,6 +1,5 @@
-const constants = {
+export default {
     TOGGLE_WORK: 'TOGGLE_WORK',
     LOGIN: 'LOGIN',
+    TOGGLE_NAVBAR: 'TOGGLE_NAVBAR',
 }
-
-export default constants;

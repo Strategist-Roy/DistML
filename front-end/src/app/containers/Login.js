@@ -1,9 +1,10 @@
-import Login from '../components/Login';
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 
+import { Login } from '../components';
+
 //import action-creators
-import { login } from '../../actions';
+import { loginAction } from '../../actions';
 
 const mapStateToProps = (state, props) => ({
 });
@@ -11,10 +12,9 @@ const mapStateToProps = (state, props) => ({
 const mapDispatchToProps = dispatch => ({
 	onLogin(credentials, history) {    //pass history api for redirect
 		dispatch(
-			login(credentials, history)
+			loginAction(credentials, history)
 		)
 	},
 });
 
-const LoginContainer = connect(mapStateToProps, mapDispatchToProps)(Login);
-export default withRouter(LoginContainer);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Login));

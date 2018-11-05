@@ -1,27 +1,22 @@
 import React from 'react';
 import { 
-    BrowserRouter,
-    Route,
-    Switch
+    BrowserRouter
 } from 'react-router-dom';
-import PrivateRoute from './PrivateRoute';
 
-import { 
-    Login,
-    Dashboard 
+import PageContent from './PageContent';
+import {
+    TopBar,
+    NavBar
 } from './containers';
 
-class App extends React.Component {
-    render() {
-        return (
-            <BrowserRouter>
-                <Switch>
-                    <Route exact path="/login" component={Login} />
-                    <PrivateRoute path="/" component={Dashboard} />
-                </Switch>
-            </BrowserRouter>
-        )
-    }
-}
-
-export default App;
+export default () => (
+    <div>
+        <BrowserRouter>
+            <div>
+                <TopBar />        {/* The top app-bar which ought to be present globally */}
+                <NavBar />        {/* The left-side drawer which ought to be present globally */}
+                <PageContent />   {/* Loads component based on Routing */}
+            </div>
+        </BrowserRouter>
+    </div>
+);
