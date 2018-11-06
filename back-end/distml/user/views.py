@@ -1,8 +1,9 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
-import os, time, hashlib, redis, json
+from django.contrib.auth import authenticate, login as auth_login
+import os, time, hashlib, redis, json, jwt
 
 #Perform Machine Learning imports
 import pandas as pd
@@ -10,6 +11,31 @@ import numpy as np
 
 #Other utility imports
 from datetime import datetime
+
+@csrf_exempt
+def login(request):
+
+	if request.method == 'POST':
+
+		data=json.loads(request.body.decode())
+		username = data['username']
+		password = data['password']
+
+		user = authenticate(request, username=username, password=password)
+
+		if user is not None:
+			'''renamed the django login function as auth_login so that 
+			   name conflict doesn't occur with this function'''
+			auth_login(request, user)
+			jwt_token = jwt.encode(
+							{'username': username },
+							settings.SECRET_KEY,
+							algorithm = 'HS256'
+						).decode('utf-8')
+			return JsonResponse({ 'token': jwt_token })
+
+		else:
+			return HttpResponseForbidden()
 
 @csrf_exempt
 def dataset_upload(request):

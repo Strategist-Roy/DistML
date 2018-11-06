@@ -36,8 +36,12 @@ const sideList = (
     </div>
 );
 
-export default ({ navbarStatus, toggleNavbar}) => (
+export default ({ navbarStatus, username, toggleNavbar}) => (
     <Drawer open={navbarStatus} onClose={() => toggleNavbar()}>
+        <div>
+            {/* user information (Images, name etc.) */}
+            Hello {username}
+        </div>
         {sideList}
     </Drawer>
 );

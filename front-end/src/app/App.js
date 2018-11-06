@@ -1,22 +1,23 @@
 import React from 'react';
 import { 
-    BrowserRouter
+    BrowserRouter,
+    Switch,
+    Route,
 } from 'react-router-dom';
 
-import PageContent from './PageContent';
 import {
-    TopBar,
-    NavBar
+    Login,
+    Dashboard
 } from './containers';
+import PrivateRoute from './PrivateRoute';
 
 export default () => (
     <div>
         <BrowserRouter>
-            <div>
-                <TopBar />        {/* The top app-bar which ought to be present globally */}
-                <NavBar />        {/* The left-side drawer which ought to be present globally */}
-                <PageContent />   {/* Loads component based on Routing */}
-            </div>
+            <Switch>
+                <Route exact path="/login" component={Login} />    {/* Seperate Page */}
+                <PrivateRoute path="/" component={Dashboard} />    {/* Go inside app */}
+            </Switch>
         </BrowserRouter>
     </div>
 );

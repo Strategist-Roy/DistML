@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
 
 import { TopBar } from '../components';
-import { toggleNavbarAction } from '../../actions';
+import { toggleNavbarAction, logoutAction } from '../../actions';
 
 const mapStateToProps = (state,props) => ({
 
@@ -13,6 +13,11 @@ const mapDispatchToProps = dispatch => ({
     toggleNavbar() {
         dispatch(
             toggleNavbarAction()
+        )
+    },
+    logout() {
+        dispatch(
+            logoutAction()
         )
     }
 });

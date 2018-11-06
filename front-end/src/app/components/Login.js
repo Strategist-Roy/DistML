@@ -13,6 +13,8 @@ const styles = theme => ({
     container: {
         display: 'flex',
         flexWrap: 'wrap',
+        position: 'absolute',
+        top: '50%',
     },
 });
 

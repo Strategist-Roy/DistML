@@ -20,6 +20,15 @@ const username = (state = null, action) => {
     }
 }
 
+const loading = (state = false, action) => {
+    switch(action.type) {
+        case C.TOGGLE_LOADING:
+            return !state;
+        default:
+            return state;
+    }
+}
+
 const navbarStatus = (state = false, action) => {
     switch(action.type) {
         case C.TOGGLE_NAVBAR:
@@ -31,6 +40,7 @@ const navbarStatus = (state = false, action) => {
 
 export default combineReducers({
     username,
+    loading,
     navbarStatus,
     working,
 });

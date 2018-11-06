@@ -1,4 +1,5 @@
 import React from 'react';
+
 import {
     AppBar,
     Toolbar,
@@ -7,7 +8,8 @@ import {
     Typography
 } from '@material-ui/core';
 import {
-    Menu as MenuIcon
+    Menu as MenuIcon,
+    PowerSettingsNew as LogoutIcon
 } from '@material-ui/icons';
 
 const styles = {
@@ -24,7 +26,7 @@ const styles = {
     },
 };
 
-export default withStyles(styles)(({classes, toggleNavbar}) => (
+export default withStyles(styles)(({classes, logout, toggleNavbar}) => (
     <div className={classes.root}>
         <AppBar>
             <Toolbar>
@@ -37,6 +39,12 @@ export default withStyles(styles)(({classes, toggleNavbar}) => (
                 <Typography variant="h5" className={classes.appName}>
                     DistML
                 </Typography>
+                <IconButton 
+                    className={classes.menuButton}
+                    onClick={() => logout()}
+                >
+                    <LogoutIcon />
+                </IconButton>
             </Toolbar>
         </AppBar>
     </div>

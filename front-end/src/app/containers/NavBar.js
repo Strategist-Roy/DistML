@@ -7,7 +7,8 @@ import { NavBar } from '../components';
 import { toggleNavbarAction } from '../../actions';
 
 const mapStateToProps = (state, props) => ({
-    navbarStatus: state.navbarStatus
+    navbarStatus: state.navbarStatus,
+    username: state.username,
 });
 
 const mapDispatchToProps = dispatch => ({
