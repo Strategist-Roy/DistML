@@ -14,7 +14,31 @@ const working = (state = false, action) => {
 const username = (state = null, action) => {
     switch(action.type) {
         case C.LOGIN:
-            return action.payload;
+            return action.payload.username;
+        case C.LOGOUT:
+            return null;
+        default:
+            return state;
+    }
+}
+
+const token = (state = null, action) => {
+    switch(action.type) {
+        case C.LOGIN:
+            return action.payload.token;
+        case C.LOGOUT:
+            return null;
+        default:
+            return state;
+    }
+}
+
+const loginState = (state = false, action) => {
+    switch(action.type) {
+        case C.LOGIN:
+            return true;
+        case C.LOGOUT:
+            return false;
         default:
             return state;
     }
@@ -38,9 +62,32 @@ const navbarStatus = (state = false, action) => {
     }
 }
 
+const defaultMessage = {
+    type: C.NONE,
+    payload: ''
+}
+
+const message = (state = defaultMessage, action) => {
+    switch(action.type) {
+        case C.ADD_MESSAGE:
+            return action.payload;
+        case C.CLEAR_MESSAGE:
+            return defaultMessage;
+        default:
+            return state;
+    }
+}
+
 export default combineReducers({
-    username,
-    loading,
-    navbarStatus,
+    userState: combineReducers({
+        loginState,
+        username,
+        token,
+    }),
+    uiReducer: combineReducers({
+        loading,
+        navbarStatus,
+        message,
+    }),
     working,
 });

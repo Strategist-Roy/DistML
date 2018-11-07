@@ -15,9 +15,9 @@ const mapDispatchToProps = dispatch => ({
             toggleNavbarAction()
         )
     },
-    logout() {
+    logout(history) {
         dispatch(
-            logoutAction()
+            logoutAction(history)
         )
     }
 });

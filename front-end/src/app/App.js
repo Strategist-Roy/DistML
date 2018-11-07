@@ -7,17 +7,21 @@ import {
 
 import {
     Login,
-    Dashboard
+    Dashboard,
+    Message
 } from './containers';
 import PrivateRoute from './PrivateRoute';
 
 export default () => (
     <div>
         <BrowserRouter>
-            <Switch>
-                <Route exact path="/login" component={Login} />    {/* Seperate Page */}
-                <PrivateRoute path="/" component={Dashboard} />    {/* Go inside app */}
-            </Switch>
+            <div>
+                <Switch>
+                    <Route exact path="/login" component={Login} />    {/* Seperate Page */}
+                    <PrivateRoute path="/" component={Dashboard} />    {/* Go inside app */}
+                </Switch>
+                <Message />     {/* For display of messages */}
+            </div>
         </BrowserRouter>
     </div>
 );

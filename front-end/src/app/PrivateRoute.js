@@ -12,7 +12,7 @@ import {
 
 export default ({ component: Component, ...rest }) => (
     <Route {...rest} render={(props) => (
-        (store.getState().username)
+        (store.getState().userState.loginState)
         ? (
             <div>
                 <TopBar />        {/* The top app-bar which ought to be present globally */}

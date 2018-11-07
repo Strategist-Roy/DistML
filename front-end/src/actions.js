@@ -1,6 +1,8 @@
 import C from './constants';
 import api from './api';
 
+export const clearMessageAction = () => ({ type: C.CLEAR_MESSAGE });
+
 export const loginAction = (credentials, history) => dispatch => {
     
     dispatch({
@@ -9,34 +11,46 @@ export const loginAction = (credentials, history) => dispatch => {
     
     api.post('user/login/', credentials)
         .then(response => {
-            console.log(response.data);
-            localStorage['token'] = response.data.token;
             dispatch([
                 {
                     type: C.TOGGLE_LOADING,
                 },
                 {
                     type: C.LOGIN,
-                    payload: credentials.username
+                    payload: {
+                        username: credentials.username,
+                        token: response.data.token
+                    }
                 }
             ]);
 
             history.push("/");
         })
         .catch(error => {
-            dispatch({
-                type: C.TOGGLE_LOADING
-            })
+            dispatch([
+                {
+                    type: C.TOGGLE_LOADING
+                },
+                {
+                    type: C.ADD_MESSAGE,
+                    payload: {
+                        type: C.MESSAGE_TYPES.ERROR,
+                        text: 'Login Failed. Check credentials!!'
+                    }
+                },
+            ]);
+
+            setTimeout(() => dispatch(clearMessageAction()),2000);
         });
 }
 
-export const logoutAction = () => {
-    localStorage.removeItem('token');
+export const logoutAction = (history) => dispatch => {
     
-    return {
-        type: C.LOGIN, 
-        payload: null
-    }; 
+    dispatch({
+        type: C.LOGOUT,
+    });
+
+    history.push("/");
 };
 
 export const toggleNavbarAction = () => ({ type: C.TOGGLE_NAVBAR });

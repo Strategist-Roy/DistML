@@ -26,7 +26,7 @@ const styles = {
     },
 };
 
-export default withStyles(styles)(({classes, logout, toggleNavbar}) => (
+export default withStyles(styles)(({classes, logout, toggleNavbar, history}) => (
     <div className={classes.root}>
         <AppBar>
             <Toolbar>
@@ -41,7 +41,7 @@ export default withStyles(styles)(({classes, logout, toggleNavbar}) => (
                 </Typography>
                 <IconButton 
                     className={classes.menuButton}
-                    onClick={() => logout()}
+                    onClick={() => logout(history)}
                 >
                     <LogoutIcon />
                 </IconButton>
