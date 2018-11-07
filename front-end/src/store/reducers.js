@@ -64,7 +64,8 @@ const navbarStatus = (state = false, action) => {
 
 const defaultMessage = {
     type: C.NONE,
-    payload: ''
+    payload: '',
+    timeoutFunction: undefined
 }
 
 const message = (state = defaultMessage, action) => {

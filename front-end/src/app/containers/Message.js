@@ -10,9 +10,9 @@ const mapStateToProps = (state, props) => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-    clearMessage() {
+    clearMessage(timeoutFunction) {
         dispatch(
-            clearMessageAction()
+            clearMessageAction(timeoutFunction)
         )
     }
 });

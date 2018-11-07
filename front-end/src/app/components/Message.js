@@ -60,7 +60,7 @@ const getSnackBarStyle = (type) => ({
     backgroundColor: getBackgroundColor(type)
 });
 
-export default ({ message = { type:C.NONE, payload:'' }, clearMessage }) =>
+export default ({ message = { type:C.NONE, payload:'',timeoutFunction: undefined }, clearMessage }) =>
     Object.keys(C.MESSAGE_TYPES).map((each,index) =>
         <Snackbar
             key={index}
@@ -87,7 +87,7 @@ export default ({ message = { type:C.NONE, payload:'' }, clearMessage }) =>
                 action={
                     <IconButton
                         color="inherit"
-                        onClick={() => clearMessage()}
+                        onClick={() => clearMessage(message.timeoutFunction)}
                     >
                         <CloseIcon />
                     </IconButton>

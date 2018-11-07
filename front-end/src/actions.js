@@ -1,7 +1,12 @@
 import C from './constants';
 import api from './api';
 
-export const clearMessageAction = () => ({ type: C.CLEAR_MESSAGE });
+export const clearMessageAction = (timeoutFunction=undefined) => {
+    clearTimeout(timeoutFunction);
+    return {
+        type: C.CLEAR_MESSAGE 
+    };
+}
 
 export const loginAction = (credentials, history) => dispatch => {
     
@@ -21,10 +26,19 @@ export const loginAction = (credentials, history) => dispatch => {
                         username: credentials.username,
                         token: response.data.token
                     }
+                },
+                {
+                    type: C.ADD_MESSAGE,
+                    payload: {
+                        type: C.MESSAGE_TYPES.SUCCESS,
+                        text: 'Welcome ' + credentials.username + '!',
+                        timeoutFunction: setTimeout(() => dispatch(clearMessageAction()),2000)
+                    }
                 }
             ]);
 
             history.push("/");
+
         })
         .catch(error => {
             dispatch([
@@ -35,20 +49,30 @@ export const loginAction = (credentials, history) => dispatch => {
                     type: C.ADD_MESSAGE,
                     payload: {
                         type: C.MESSAGE_TYPES.ERROR,
-                        text: 'Login Failed. Check credentials!!'
+                        text: 'Login Failed. Check credentials!!',
+                        timeoutFunction: setTimeout(() => dispatch(clearMessageAction()),2000)
                     }
                 },
             ]);
-
-            setTimeout(() => dispatch(clearMessageAction()),2000);
         });
 }
 
 export const logoutAction = (history) => dispatch => {
     
-    dispatch({
-        type: C.LOGOUT,
-    });
+    dispatch([
+        {
+            type: C.LOGOUT,
+        },
+        {
+            type: C.ADD_MESSAGE,
+            payload: {
+                type: C.MESSAGE_TYPES.INFO,
+                text: 'You have logged out'
+            }
+        }
+    ]);
+
+    setTimeout(() => dispatch(clearMessageAction()),2000);
 
     history.push("/");
 };
