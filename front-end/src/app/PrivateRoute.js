@@ -17,7 +17,14 @@ export default ({ component: Component, ...rest }) => (
             <div>
                 <TopBar />        {/* The top app-bar which ought to be present globally */}
                 <NavBar />        {/* The left-side drawer which ought to be present globally */}
-                <Component {...props} />  {/* Loads component based on Routing */}
+                <div
+                    style={{
+                        position: 'absolute',
+                        top: '80px'
+                    }}
+                >
+                    <Component {...props} />  {/* Loads component based on Routing */}
+                </div>
             </div>
         )
         : <Redirect to="/login" />

@@ -17,4 +17,11 @@ export default {
         INFO: 'INFO',
         ERROR: 'ERROR',
     },
+
+    //Routes for Navbar Components
+    ROUTES: {
+        BALANCE: '/balance',
+        JOBS: '/jobs',
+        HOME: '/',
+    }
 }

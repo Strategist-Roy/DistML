@@ -24,14 +24,15 @@ export const loginAction = (credentials, history) => dispatch => {
                     type: C.LOGIN,
                     payload: {
                         username: credentials.username,
-                        token: response.data.token
+                        token: response.data.token,
+                        name: response.data.name,
                     }
                 },
                 {
                     type: C.ADD_MESSAGE,
                     payload: {
                         type: C.MESSAGE_TYPES.SUCCESS,
-                        text: 'Welcome ' + credentials.username + '!',
+                        text: 'Welcome ' + response.data.name + '!',
                         timeoutFunction: setTimeout(() => dispatch(clearMessageAction()),2000)
                     }
                 }
@@ -67,14 +68,18 @@ export const logoutAction = (history) => dispatch => {
             type: C.ADD_MESSAGE,
             payload: {
                 type: C.MESSAGE_TYPES.INFO,
-                text: 'You have logged out'
+                text: 'You have logged out',
+                timeoutFunction: setTimeout(() => dispatch(clearMessageAction()),2000)
             }
         }
     ]);
-
-    setTimeout(() => dispatch(clearMessageAction()),2000);
 
     history.push("/");
 };
 
 export const toggleNavbarAction = () => ({ type: C.TOGGLE_NAVBAR });
+
+export const navigateAction = (route, history) => dispatch => {
+    history.push(route);
+    dispatch(toggleNavbarAction())
+};

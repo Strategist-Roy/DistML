@@ -4,17 +4,25 @@ import { withRouter } from 'react-router';
 
 import { NavBar } from '../components';
 
-import { toggleNavbarAction } from '../../actions';
+import { 
+    toggleNavbarAction,
+    navigateAction
+} from '../../actions';
 
 const mapStateToProps = (state, props) => ({
     navbarStatus: state.uiReducer.navbarStatus,
-    username: state.userState.username,
+    name: state.userState.name,
 });
 
 const mapDispatchToProps = dispatch => ({
     toggleNavbar() {
         dispatch(
             toggleNavbarAction()
+        )
+    },
+    navigate(route, history) {
+        dispatch(
+            navigateAction(route, history)
         )
     }
 });

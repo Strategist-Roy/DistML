@@ -32,7 +32,10 @@ def login(request):
 							settings.SECRET_KEY,
 							algorithm = 'HS256'
 						).decode('utf-8')
-			return JsonResponse({ 'token': jwt_token })
+			return JsonResponse({
+									'name': user.first_name + ' ' + user.last_name,
+									'token': jwt_token 
+								})
 
 		else:
 			return HttpResponseForbidden()

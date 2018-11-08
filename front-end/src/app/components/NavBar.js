@@ -2,46 +2,27 @@ import React from 'react';
 import { 
     withStyles,
     Drawer,
-    List,
-    ListItem,
-    ListItemText,
-    ListItemIcon,
     Divider,
 } from '@material-ui/core';
 
 import {
-    MoveToInbox as InboxIcon,
-    Mail as MailIcon
-} from '@material-ui/icons';
+    Functionalities,
+    ProfileInfo,
+    Miscellaneous
+} from './navbarcomponents';
 
-const sideList = (
-    <div>
-        <List>
-            {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-            <ListItem button key={text}>
-            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-            <ListItemText primary={text} />
-            </ListItem>
-            ))}
-        </List>
-        <Divider />
-        <List>
-            {['All mail', 'Trash', 'Spam'].map((text, index) => (
-            <ListItem button key={text}>
-            <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-            <ListItemText primary={text} />
-            </ListItem>
-            ))}
-        </List>
-    </div>
-);
+const styles = {
+    //put styles in here in future
+};
 
-export default ({ navbarStatus, username, toggleNavbar}) => (
-    <Drawer open={navbarStatus} onClose={() => toggleNavbar()}>
+export default withStyles(styles)(({ navbarStatus, name, toggleNavbar, ...props }) => (
+    <Drawer open={navbarStatus} onClose={() => {console.log(props),toggleNavbar()}}>
         <div>
-            {/* user information (Images, name etc.) */}
-            Hello {username}
+            <ProfileInfo />
+            <Divider />
+            <Functionalities {...props} />
+            <Divider />
+            <Miscellaneous {...props}/>
         </div>
-        {sideList}
     </Drawer>
-);
+));

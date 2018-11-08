@@ -22,6 +22,17 @@ const username = (state = null, action) => {
     }
 }
 
+const name = (state = null, action) => {
+    switch(action.type) {
+        case C.LOGIN:
+            return action.payload.name;
+        case C.LOGOUT:
+            return null;
+        default:
+            return state;
+    }
+}
+
 const token = (state = null, action) => {
     switch(action.type) {
         case C.LOGIN:
@@ -84,6 +95,7 @@ export default combineReducers({
         loginState,
         username,
         token,
+        name,
     }),
     uiReducer: combineReducers({
         loading,

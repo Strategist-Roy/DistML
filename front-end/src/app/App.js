@@ -8,6 +8,7 @@ import {
 import {
     Login,
     Dashboard,
+    AccountBalance,
     Message
 } from './containers';
 import PrivateRoute from './PrivateRoute';
@@ -18,7 +19,8 @@ export default () => (
             <div>
                 <Switch>
                     <Route exact path="/login" component={Login} />    {/* Seperate Page */}
-                    <PrivateRoute path="/" component={Dashboard} />    {/* Go inside app */}
+                    <PrivateRoute exact path="/" component={Dashboard} />    {/* Go Dashboard */}
+                    <PrivateRoute path="/balance" component={AccountBalance} />  {/* Go AccountBalance */}
                 </Switch>
                 <Message />     {/* For display of messages */}
             </div>
