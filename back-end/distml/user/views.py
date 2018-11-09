@@ -4,6 +4,8 @@ from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 from django.contrib.auth import authenticate, login as auth_login
 import os, time, hashlib, redis, json, jwt
+from .models import AppUsers
+from django.contrib.auth.models import User
 
 #Perform Machine Learning imports
 import pandas as pd
@@ -27,18 +29,49 @@ def login(request):
 			'''renamed the django login function as auth_login so that 
 			   name conflict doesn't occur with this function'''
 			auth_login(request, user)
+			app_user = AppUsers.objects.get(user=user)
+
 			jwt_token = jwt.encode(
-							{'username': username },
+							{ 'username': username },
 							settings.SECRET_KEY,
 							algorithm = 'HS256'
 						).decode('utf-8')
 			return JsonResponse({
-									'name': user.first_name + ' ' + user.last_name,
-									'token': jwt_token 
+									'name': app_user.name,
+									'token': jwt_token,
+									'email': user.email
 								})
 
 		else:
 			return HttpResponseForbidden()
+
+@csrf_exempt
+def register(request):
+
+	if request.method == 'POST':
+
+		data=json.loads(request.body.decode())
+		username = data['username']
+		password = data['password']
+		name = data['name']
+		email = data['email']
+
+		user = User.objects.create_user(username,email=email,password=password)
+
+		app_user = AppUsers(user=user,name=name)
+		app_user.save()
+
+		jwt_token = jwt.encode(
+						{ 'username': username },
+						settings.SECRET_KEY,
+						algorithm = 'HS256'
+					).decode('utf-8')
+
+		return JsonResponse({
+								'token': jwt_token,
+							})
+	else:
+		return HttpResponseForbidden()
 
 @csrf_exempt
 def dataset_upload(request):
@@ -78,6 +111,17 @@ def split_save(file,username):
 
 		#Push into Redis List
 		conn.rpush('data',job_id+';'+file_name)
+
+@csrf_exempt
+def check_username_available(request):
+
+	if request.method == 'GET':
+		username = request.GET['username']
+		return JsonResponse({
+					'available': not User.objects.filter(username=username).exists()
+				})
+	else:
+		return HttpResponseForbidden()
 
 @csrf_exempt
 def dispatch(request):

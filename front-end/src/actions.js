@@ -8,6 +8,78 @@ export const clearMessageAction = (timeoutFunction=undefined) => {
     };
 }
 
+export const registerAction = (userdata, history) => dispatch => {
+
+    //check if any field is empty or not
+    var checkValid = true;
+
+    for (var key in userdata) {
+        if (userdata[key]=='')
+            checkValid=false;
+    }
+    
+    if (checkValid) {    
+        dispatch({
+            type: C.TOGGLE_LOADING
+        });
+
+        api.post('user/register/', userdata)
+            .then(response => {
+                dispatch([
+                    {
+                        type: C.TOGGLE_LOADING,
+                    },
+                    {
+                        type: C.LOGIN,          //perform login immediately
+                        payload: {
+                            username: userdata.username,
+                            token: response.data.token,
+                            name: userdata.name,
+                            email: userdata.email
+                        }
+                    },
+                    {
+                        type: C.ADD_MESSAGE,
+                        payload: {
+                            type: C.MESSAGE_TYPES.SUCCESS,
+                            text: 'You have registered successfully',
+                            timeoutFunction: setTimeout(() => dispatch(clearMessageAction()),2000)
+                        }
+                    }
+                ]);
+
+                history.push("/");
+
+            })
+            .catch(error => {
+                console.log(error);
+                dispatch([
+                    {
+                        type: C.TOGGLE_LOADING
+                    },
+                    {
+                        type: C.ADD_MESSAGE,
+                        payload: {
+                            type: C.MESSAGE_TYPES.ERROR,
+                            text: 'Registration Failed ! Retry',
+                            timeoutFunction: setTimeout(() => dispatch(clearMessageAction()),2000)
+                        }
+                    },
+                ]);
+            });
+    }
+    else {
+        dispatch({
+            type: C.ADD_MESSAGE,
+            payload: {
+                type: C.MESSAGE_TYPES.ERROR,
+                text: 'Some Fields are empty!!',
+                timeoutFunction: setTimeout(() => dispatch(clearMessageAction()),2000)
+            }
+        })
+    }
+}
+
 export const loginAction = (credentials, history) => dispatch => {
     
     dispatch({
@@ -83,4 +155,42 @@ export const toggleNavbarAction = () => ({ type: C.TOGGLE_NAVBAR });
 export const navigateAction = (route, history) => dispatch => {
     history.push(route);
     dispatch(toggleNavbarAction())
+};
+
+export const checkUsernameAvailableAction = (username) => dispatch => {
+
+    if (username=='') {
+        dispatch({
+            type: C.CHECK_USERNAME_AVAILABLE,
+            payload: C.USERNAME_STATUS.INACTIVE
+        });
+    }
+    else {
+        api.get('user/check_username_available/',
+            {
+                params: {
+                    username: username
+                }
+            })
+            .then(response => {
+                if (!response.data.available) {                    
+                    dispatch({
+                        type: C.CHECK_USERNAME_AVAILABLE,
+                        payload: C.USERNAME_STATUS.TAKEN
+                    });
+                }
+                else {
+                    dispatch({
+                        type: C.CHECK_USERNAME_AVAILABLE,
+                        payload: C.USERNAME_STATUS.INACTIVE
+                    });
+                }
+            })
+            .catch(error => {
+                dispatch({
+                    type: C.CHECK_USERNAME_AVAILABLE,
+                    payload: C.USERNAME_STATUS.INACTIVE
+                });
+            });
+    }
 };

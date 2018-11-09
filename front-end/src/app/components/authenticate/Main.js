@@ -34,6 +34,9 @@ const styles = (theme) => ({
         top: '10%',
         width: '50%',
         margin: 'auto',
+        [theme.breakpoints.down('sm')]: {
+            width: '80%',
+        },
     },
     background: {
         position: 'fixed',
@@ -104,7 +107,7 @@ class Main extends React.Component {
                         <Tab disableRipple disableTouchRipple value={tabVal.REGISTER} label="Register" />
                     </Tabs>
                     { currenTab === 'LOGIN' && <Login {...rest} /> }
-                    { currenTab === 'REGISTER' && <Register /> }
+                    { currenTab === 'REGISTER' && <Register {...rest}/> }
                 </Paper>
             </div>
         );

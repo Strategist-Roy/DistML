@@ -101,6 +101,15 @@ const message = (state = defaultMessage, action) => {
     }
 }
 
+const usernameAvailable = (state = C.USERNAME_STATUS.INACTIVE, action) => {
+    switch(action.type) {
+        case C.CHECK_USERNAME_AVAILABLE:
+            return action.payload
+        default:
+            return state;
+    }
+}
+
 export default combineReducers({
     userState: combineReducers({
         loginState,
@@ -113,6 +122,7 @@ export default combineReducers({
         loading,
         navbarStatus,
         message,
+        usernameAvailable,
     }),
     working,
 });

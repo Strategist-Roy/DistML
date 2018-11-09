@@ -23,5 +23,12 @@ export default {
         BALANCE: '/balance',
         JOBS: '/jobs',
         HOME: '/',
+    },
+
+    //for checking availability of username during registration
+    CHECK_USERNAME_AVAILABLE: 'CHECK_USERNAME_AVAILABLE',
+    USERNAME_STATUS: {
+        INACTIVE: 'INACTIVE',
+        TAKEN: 'TAKEN'  
     }
 }

@@ -10,7 +10,10 @@ import {
     blueGrey,
     green,
     deepPurple,
+    red,
 } from '@material-ui/core/colors';
+
+import C from '../../../constants';
 
 const styles = theme => ({
     btn: {
@@ -26,7 +29,7 @@ const styles = theme => ({
         transition: 'background-color 0.1s linear'
     },
     form: {
-        top: '-80%',
+        top: '-85%',
         left: '50%',
         display: 'flex',
         alignItems: 'center',
@@ -43,18 +46,32 @@ const styles = theme => ({
     textField: {
         width: '70%',
         margin: 'auto',
+    },
+    alertTaken: {
+        color: red[500],
+        marginLeft: '15%',
     }
 });
 
-class Login extends React.Component {
+class Register extends React.Component {
     constructor(props) {
         super(props);
 
         this.state = {
             username: '',
-            password: ''
+            name: '',
+            password: '',
+            confirmPassword: '',
+            email: '',
+            passwordMatch: true,
+            validEmail: true,
         };
 
+    }
+
+    componentDidMount() {
+        //send empty username for resetting the icon flags upon reload
+        this.props.checkUsernameAvailable(this.state.username);
     }
 
     handleChange(attribute, event) {
@@ -64,17 +81,59 @@ class Login extends React.Component {
     }
 
     submit(event) {
-        this.props.onLogin(this.state,this.props.history);
+        const userdata = {
+            username: this.state.username,
+            name: this.state.name,
+            password: this.state.password,
+            email: this.state.email,
+        };
+
+        this.props.onRegister(userdata,this.props.history);
+    }
+
+    isUsernameAvailable() {
+        this.props.checkUsernameAvailable(this.state.username);
+    }
+
+    matchPasswords() {
+        const {
+            password,
+            confirmPassword
+        } = this.state;
+
+        if (confirmPassword!='' && confirmPassword!=password) {
+            this.setState({ passwordMatch: false });
+        }
+        else {
+            this.setState({ passwordMatch: true });
+        }
+    }
+
+    validateEmail() {
+        var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        const { email } = this.state;
+
+        if (email!='') {
+            this.setState({
+                validEmail: re.test(String(this.state.email).toLowerCase())
+            });
+        }
     }
 
     render() {
         const {
             username,
             password,
+            confirmPassword,
+            email,
+            passwordMatch,
+            validEmail,
+            name
         } = this.state;
 
         const {
-            classes
+            classes,
+            usernameAvailable
         } = this.props;
 
         return (
@@ -85,7 +144,21 @@ class Login extends React.Component {
                             className={classes.textField}
                             label="Username"
                             value={username}
+                            inputProps={{
+                                onBlur: this.isUsernameAvailable.bind(this)
+                            }}
                             onChange={this.handleChange.bind(this,'username')}
+                        />
+                        {usernameAvailable === C.USERNAME_STATUS.TAKEN &&
+                            <Typography variant="caption" className={classes.alertTaken}>username already taken</Typography>
+                        }
+                    </FormControl>
+                    <FormControl className={classes.formControl}>
+                        <TextField
+                            className={classes.textField}
+                            label="Name"
+                            value={name}
+                            onChange={this.handleChange.bind(this,'name')}
                         />
                     </FormControl>
                     <FormControl className={classes.formControl}>
@@ -95,7 +168,40 @@ class Login extends React.Component {
                             type="password"
                             value={password}
                             onChange={this.handleChange.bind(this,'password')}
+                            inputProps={{
+                                onBlur: this.matchPasswords.bind(this)
+                            }}
                         />
+                    </FormControl>
+                    <FormControl className={classes.formControl}>
+                        <TextField
+                            className={classes.textField}
+                            label="Confirm Password"
+                            type="password"
+                            value={confirmPassword}
+                            onChange={this.handleChange.bind(this,'confirmPassword')}
+                            inputProps={{
+                                onBlur: this.matchPasswords.bind(this)
+                            }}
+                        />
+                        {passwordMatch==false && 
+                            <Typography variant="caption" className={classes.alertTaken}>passwords don't match</Typography>
+                        }
+                    </FormControl>
+                    <FormControl className={classes.formControl}>
+                        <TextField
+                            className={classes.textField}
+                            label="Email"
+                            type="email"
+                            value={email}
+                            onChange={this.handleChange.bind(this,'email')}
+                            inputProps={{
+                                onBlur: this.validateEmail.bind(this)
+                            }}
+                        />
+                        {validEmail==false && 
+                            <Typography variant="caption" className={classes.alertTaken}>Invalid Email</Typography>
+                        }
                     </FormControl>
                     <FormControl className={classes.formControl}>
                         <Button
@@ -106,7 +212,7 @@ class Login extends React.Component {
                                 variant="button"
                                 color="inherit"
                             >
-                                Login
+                                Register
                             </Typography>
                         </Button>
                     </FormControl>
@@ -116,4 +222,4 @@ class Login extends React.Component {
     }
 }
 
-export default withStyles(styles)(Login);
+export default withStyles(styles)(Register);
