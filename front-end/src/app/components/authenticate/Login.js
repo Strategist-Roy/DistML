@@ -26,7 +26,7 @@ const styles = theme => ({
         transition: 'background-color 0.1s linear'
     },
     form: {
-        top: '-80%',
+        top: '-70%',
         left: '50%',
         display: 'flex',
         alignItems: 'center',

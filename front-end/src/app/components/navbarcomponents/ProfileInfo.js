@@ -6,7 +6,7 @@ import {
 } from '@material-ui/core';
 
 import baseUrl from '../../../baseUrl';
-import Image from '../../images/profilebackground_new.jpg';
+import Image from '../../images/profilebackground.jpg';
 
 const styles = {
     root: {

@@ -9,10 +9,12 @@ import {
 import {
     blueGrey,
     deepPurple,
+    indigo
 } from '@material-ui/core/colors';
 
 import Login from './Login';
 import Register from './Register';
+import SiteInfo from './SiteInfo';
 
 const tabVal = {
     LOGIN: 'LOGIN',
@@ -30,7 +32,7 @@ const styles = (theme) => ({
         display: 'flex',
         flexWrap: 'wrap',
         position: 'relative',
-        height: '70%',
+        height: '80%',
         top: '10%',
         width: '50%',
         margin: 'auto',
@@ -49,11 +51,12 @@ const styles = (theme) => ({
         backgroundColor: blueGrey[100],
     },
     siteInfo: {
-        top: -9,
+        top: -10,
         height: '104%',
         position: 'relative',
         width: '50%',
-        backgroundColor: deepPurple[400],
+        backgroundColor: /*indigo[500],*/'#58c5cc91',
+        left: -10,
     },
     tabRoot: {
         top: 10,
@@ -91,7 +94,7 @@ class Main extends React.Component {
             <div className={classes.background}>
                 <Paper className={classes.root} elevation={4}>
                     <Paper className={classes.siteInfo} elevation={4}>
-                        Hello World
+                        <SiteInfo />
                     </Paper>
                     <Tabs 
                         value={currenTab}
