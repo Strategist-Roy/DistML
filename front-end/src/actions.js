@@ -26,13 +26,14 @@ export const loginAction = (credentials, history) => dispatch => {
                         username: credentials.username,
                         token: response.data.token,
                         name: response.data.name,
+                        email: response.data.email
                     }
                 },
                 {
                     type: C.ADD_MESSAGE,
                     payload: {
                         type: C.MESSAGE_TYPES.SUCCESS,
-                        text: 'Welcome ' + response.data.name + '!',
+                        text: 'Welcome ' + response.data.name,
                         timeoutFunction: setTimeout(() => dispatch(clearMessageAction()),2000)
                     }
                 }
@@ -50,7 +51,7 @@ export const loginAction = (credentials, history) => dispatch => {
                     type: C.ADD_MESSAGE,
                     payload: {
                         type: C.MESSAGE_TYPES.ERROR,
-                        text: 'Login Failed. Check credentials!!',
+                        text: 'Login Failed. Check credentials !!',
                         timeoutFunction: setTimeout(() => dispatch(clearMessageAction()),2000)
                     }
                 },

@@ -12,6 +12,8 @@ import {
 const mapStateToProps = (state, props) => ({
     navbarStatus: state.uiReducer.navbarStatus,
     name: state.userState.name,
+    username: state.userState.username,
+    email: state.userState.email,
 });
 
 const mapDispatchToProps = dispatch => ({

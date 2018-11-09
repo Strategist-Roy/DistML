@@ -12,9 +12,16 @@ import {
     PowerSettingsNew as LogoutIcon
 } from '@material-ui/icons';
 
+import {
+    deepPurple
+} from '@material-ui/core/colors';
+
 const styles = {
     root: {
         flexGrow: 1,
+    },
+    appBar: {
+        backgroundColor: deepPurple[400],
     },
     menuButton: {
         color: "white"
@@ -28,7 +35,9 @@ const styles = {
 
 export default withStyles(styles)(({classes, logout, toggleNavbar, history}) => (
     <div className={classes.root}>
-        <AppBar>
+        <AppBar
+            className={classes.appBar}
+        >
             <Toolbar>
                 <IconButton 
                     className={classes.menuButton}

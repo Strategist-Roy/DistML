@@ -6,7 +6,7 @@ import {
 } from 'react-router-dom';
 
 import {
-    Login,
+    Authenticate,
     Dashboard,
     AccountBalance,
     Message
@@ -18,7 +18,7 @@ export default () => (
         <BrowserRouter>
             <div>
                 <Switch>
-                    <Route exact path="/login" component={Login} />    {/* Seperate Page */}
+                    <Route exact path="/login" component={Authenticate} />    {/* Seperate Page */}
                     <PrivateRoute exact path="/" component={Dashboard} />    {/* Go Dashboard */}
                     <PrivateRoute path="/balance" component={AccountBalance} />  {/* Go AccountBalance */}
                 </Switch>

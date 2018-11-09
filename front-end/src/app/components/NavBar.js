@@ -11,14 +11,22 @@ import {
     Miscellaneous
 } from './navbarcomponents';
 
-const styles = {
-    //put styles in here in future
-};
+const styles = theme => ({
+    paper: {
+        overflowX: 'hidden'
+    }
+});
 
-export default withStyles(styles)(({ navbarStatus, name, toggleNavbar, ...props }) => (
-    <Drawer open={navbarStatus} onClose={() => {console.log(props),toggleNavbar()}}>
-        <div>
-            <ProfileInfo />
+export default withStyles(styles)(({ navbarStatus, toggleNavbar, classes, ...props }) => (
+    <Drawer 
+        open={navbarStatus} 
+        onClose={() => {toggleNavbar()}}
+        classes={{
+            paper: classes.paper
+        }}
+    >
+        <div className={classes.root}>
+            <ProfileInfo {...props}/>
             <Divider />
             <Functionalities {...props} />
             <Divider />

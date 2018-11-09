@@ -15,8 +15,8 @@ export default ({ component: Component, ...rest }) => (
         (store.getState().userState.loginState)
         ? (
             <div>
-                <TopBar />        {/* The top app-bar which ought to be present globally */}
-                <NavBar />        {/* The left-side drawer which ought to be present globally */}
+                <TopBar />        {/*The top app-bar which ought to be present globally */}
+                <NavBar />        {/*The left-side drawer which ought to be present globally */}
                 <div
                     style={{
                         position: 'absolute',

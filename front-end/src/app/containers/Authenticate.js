@@ -1,7 +1,7 @@
 import { withRouter } from 'react-router';
 import { connect } from 'react-redux';
 
-import { Login } from '../components';
+import Authenticate from '../components/authenticate/Main';
 
 //import action-creators
 import { loginAction } from '../../actions';
@@ -17,4 +17,4 @@ const mapDispatchToProps = dispatch => ({
 	},
 });
 
-export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Login));
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Authenticate));

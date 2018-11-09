@@ -2,7 +2,8 @@ import React from 'react';
 import {
     Snackbar,
     IconButton,
-    SnackbarContent
+    SnackbarContent,
+    Typography
 } from '@material-ui/core';
 
 import {
@@ -81,7 +82,12 @@ export default ({ message = { type:C.NONE, payload:'',timeoutFunction: undefined
                                 paddingRight: 10
                             }}
                         />
-                        {message.text}
+                        <Typography
+                            variant="body2"
+                            color='inherit'
+                        >
+                            {message.text}
+                        </Typography>
                     </span>
                 }
                 action={
