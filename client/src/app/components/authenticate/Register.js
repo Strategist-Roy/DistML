@@ -36,11 +36,17 @@ const styles = theme => ({
         justifyContent: 'center',
         width: '50%',
         position: 'relative',
+        [theme.breakpoints.down('sm')]: {
+            top: '-87%'
+        },
     },
     formControl: {
         width: '100%',
         fontSize: '1em',
         marginBottom: '16px',
+        [theme.breakpoints.down('sm')]: {
+            marginBottom: '10px'
+        },
         color: 'white',
     },
     textField: {
