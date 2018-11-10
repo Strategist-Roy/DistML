@@ -1,8 +1,10 @@
 const { app, BrowserWindow } = require('electron')
-  
+const { execFileSync, spawn } = require('child_process')
+
   // Keep a global reference of the window object, if you don't, the window will
   // be closed automatically when the JavaScript object is garbage collected.
   let win
+  let pythonServer
   
   function createWindow () {
     // Create the browser window.
@@ -10,7 +12,7 @@ const { app, BrowserWindow } = require('electron')
         width: 800, 
         height: 600, 
         webPreferences: {
-          devTools: false
+          // devTools: false
         } 
     })
   
@@ -19,6 +21,15 @@ const { app, BrowserWindow } = require('electron')
   
     // Open the DevTools.
     // win.webContents.openDevTools()
+    console.log("Hello World")
+
+    //start the flask server for python back-end
+    try {
+      pythonServer = spawn('python', ['src/back-end/run.py'])
+    }
+    catch(error) {
+      console.log(error);
+    }
   
     // Emitted when the window is closed.
     win.on('closed', () => {
@@ -26,6 +37,8 @@ const { app, BrowserWindow } = require('electron')
       // in an array if your app supports multi windows, this is the time
       // when you should delete the corresponding element.
       win = null
+      pythonServer.kill('SIGINT')
+      pythonServer = null
     })
   }
   
