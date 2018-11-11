@@ -1,4 +1,1 @@
-{
-    "username": "strategist",
-    "working": false 
-}
+{"jobStatus":{"working":false},"uiReducer":{"loading":false,"message":{"payload":"","type":"NONE"},"navbarStatus":false,"usernameAvailable":"INACTIVE"},"userState":{"email":"strategist.roy@gmail.com","loginState":true,"name":"Maharshi Roy","token":"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6InN0cmF0ZWdpc3QifQ.OCrsmiarLn277ef4B4m3tWrILZHBPIxuumu7mBYKFOw","username":"strategist"}}

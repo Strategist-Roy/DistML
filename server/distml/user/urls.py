@@ -9,4 +9,5 @@ urlpatterns = [
 	url(r'^user/check_username_available/$', views.check_username_available),
 	url(r'^user/upload_dataset/$', views.dataset_upload),	
 	url(r'^user/dispatch/$', views.dispatch),
+	url(r'^user/test_upload/$', views.test_upload),
 ]

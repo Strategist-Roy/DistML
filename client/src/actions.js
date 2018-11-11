@@ -194,3 +194,12 @@ export const checkUsernameAvailableAction = (username) => dispatch => {
             });
     }
 };
+
+export const toggleWorkingAction = (jobStatus) => {
+    const { ipcRenderer } = window.require('electron');
+
+    //ask main process to toggle child_process
+    ipcRenderer.send('toggle-work', !jobStatus);
+
+    return { type: C.TOGGLE_WORK };
+};

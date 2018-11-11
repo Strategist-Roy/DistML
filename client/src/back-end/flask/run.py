@@ -7,7 +7,7 @@ cors = CORS(app, resources={r"/*": {"origins": "http://localhost:8080"}})
 @app.route('/',methods=['GET'])
 def hello_world():
     return jsonify({
-        'text': 'Haha Gotcha!!'
+        'text': 'Haha Gotta Catch-em all!!'
     })
 
 if __name__ == '__main__':

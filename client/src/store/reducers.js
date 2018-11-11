@@ -124,5 +124,7 @@ export default combineReducers({
         message,
         usernameAvailable,
     }),
-    working,
+    jobStatus: combineReducers({
+        working
+    }),
 });

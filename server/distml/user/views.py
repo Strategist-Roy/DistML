@@ -147,3 +147,15 @@ def dispatch(request):
 
 		else:   #No dataset remaining
 			return HttpResponse(json.dumps(None))
+
+@csrf_exempt
+def test_upload(request):
+
+	if request.method == 'POST':
+
+		print(json.loads(request.body.decode()))
+		# data=json.loads(request.body.decode())
+		# with open('upload.txt','a') as f:
+		# 	f.write(data['text'])
+
+		return HttpResponse("Successfully Written")

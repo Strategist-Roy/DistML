@@ -3,7 +3,8 @@ import allReducers from './reducers';
 import thunk from 'redux-thunk';
 import multi from 'redux-multi';
 
-//load from localstorage data
-const initialState = (localStorage["redux-store"]) ? JSON.parse(localStorage["redux-store"]) : {};
+//load initialState file
+const fs = window.require('fs')
+const initialState = JSON.parse(fs.readFileSync('src/initialState.json'));
 
-export default applyMiddleware(thunk,multi)(createStore)(allReducers, initialState);
+export default applyMiddleware(thunk, multi)(createStore)(allReducers, initialState);

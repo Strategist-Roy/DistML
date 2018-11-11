@@ -11,7 +11,9 @@ window.store = store;
 window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
 
 store.subscribe(() => { console.log(store.getState()) });
-store.subscribe(() => { localStorage["redux-store"] = JSON.stringify(store.getState()) });
+
+const { ipcRenderer } = window.require('electron');
+store.subscribe(() => { ipcRenderer.send('save-state', store.getState()) });
 
 render(
     <Provider store={store}>
