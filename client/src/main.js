@@ -9,16 +9,10 @@ let pythonScript;
 
 function setupIPC () {
 
-	//register state saver function on each redux change
-	ipcMain.on('save-state', (event, state) => {
-		fs.writeFileSync('src/initialState.json', JSON.stringify(state));
-	});
-
 	//set up python script launch and exit
 	ipcMain.on('toggle-work', (event, jobStatus) => {
-		if (jobStatus) {
+		if (jobStatus)
 			pythonScript = spawn('python', ['src/back-end/syscall/run.py']);
-		}
 		else
 			pythonScript.kill('SIGINT');
 	});
@@ -28,12 +22,13 @@ function setupIPC () {
 function cleanUp () {
 	var finalState = JSON.parse(fs.readFileSync('src/initialState.json'));
 
-	finalState.jobStatus.working = false;
+	finalState.jobStatus = {};
+	finalState.uiReducer = {};
 
 	fs.writeFileSync('src/initialState.json', JSON.stringify(finalState));
 
-	if (!pythonScript.killed);
-	pythonScript.kill('SIGINT');
+	if (pythonScript!==undefined && !pythonScript.killed)
+		pythonScript.kill('SIGINT');
 
 	win = null;
 	pythonScript = null;

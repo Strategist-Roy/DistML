@@ -12,8 +12,8 @@ window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
 
 store.subscribe(() => { console.log(store.getState()) });
 
-const { ipcRenderer } = window.require('electron');
-store.subscribe(() => { ipcRenderer.send('save-state', store.getState()) });
+const fs = window.require('fs');
+store.subscribe(() => fs.writeFile('src/initialState.json', JSON.stringify(store.getState()), (error) => { if (error) throw error; }));
 
 render(
     <Provider store={store}>
