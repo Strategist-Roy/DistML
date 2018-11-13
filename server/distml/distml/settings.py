@@ -141,3 +141,8 @@ CHUNK_SIZE = 10
 
 #CORS origin allow all domains
 CORS_ORIGIN_ALLOW_ALL = True
+
+# from corsheaders.defaults import default_headers
+# CORS_ALLOW_HEADERS = default_headers + (
+#     'authorization',
+# )

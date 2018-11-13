@@ -1,7 +1,20 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-import json, redis
+from django.contrib.auth.models import User
+from django.conf import settings
+import os, json, redis, jwt, pickle, time, hashlib
+import pandas as pd
+
+def get_username_from_token(token):
+
+	decoded_jwt = jwt.decode(
+						token,
+						settings.SECRET_KEY,
+						algorithm='HS256'
+					)
+
+	return decoded_jwt['username']
 
 def split_save(file,username):
 
@@ -15,7 +28,7 @@ def split_save(file,username):
 	job_id = hashlib.sha256(timestamp_in_sec.encode()).hexdigest()[:15]
 
 	#create directory structure according to that
-	directory = settings.MEDIA_ROOT+'/'+username+'/'+job_id+'/'
+	directory = settings.MEDIA_ROOT+'/'+username+'/'+job_id+'/dataset/'
 
 	#check if directory exists
 	if not os.path.exists(directory):
@@ -25,44 +38,84 @@ def split_save(file,username):
 	conn = redis.Redis('localhost')
 
 	for i in range(0,l,10):
-		file_name = str(int(i/10))+'.csv'
-		df[i:min(i+chunk,l)].to_csv(directory+file_name,index=False)
+		file_name = str(int(i/10))
+		df[i:min(i+chunk,l)].to_csv(directory+file_name+'.csv',index=False)
 
 		#Push into Redis List
-		conn.rpush('data',job_id+';'+file_name)
+		conn.rpush('data',username+';'+job_id+';'+file_name)
 
 @csrf_exempt
 def dataset_upload(request):
 
 	if request.method == 'POST':
+
+		# username = get_username_from_token(request.META['HTTP_AUTHORIZATION'])
 		dataset = request.FILES['dataset']
 
 		#Split save the file
-		split_save(dataset,'strategist')
+		split_save(dataset, 'strategist')
 
 		return HttpResponse("Done !!")
+
+def get_next_block():
+
+	conn = redis.Redis('localhost')
+
+	while conn.llen('data'):
+		
+		#get next job from redis list & push it back
+		block = conn.lpop('data').decode()
+
+		#split by ;
+		chunks = block.split(';')
+
+		#fetch customer, job id and file name seperately
+		customer = chunks[0]
+		job_id = chunks[1]
+		file_name = chunks[2]
+		
+		#check if result is already present, only push to redis queue if output is still not present
+		directory = settings.MEDIA_ROOT+'/'+customer+'/'+job_id+'/result/'
+		file_name_check = directory+file_name+'.pickle'
+		if not os.path.isfile(file_name_check):
+			conn.rpush('data', block)
+			return {
+				'customer': customer,
+				'job_id': job_id,
+				'file_name': file_name
+			}
+
+	return None
 
 @csrf_exempt
 def dispatch(request):
 	if request.method == 'GET':
-	
-		conn = redis.Redis('localhost')
 
-		if conn.llen('data'):
+		data = get_next_block()
 
-			#get chunk from redis list
-			chunk = conn.lpop('data').decode().split(';')
+		return HttpResponse(json.dumps(data))
 
-			#fetch job id and file name seperately
-			job_id = chunk[0]
-			file_name = chunk[1]
+@csrf_exempt
+def submit_results(request):
 
-			data = {
-				'job_id': job_id, 
-				'file_name': file_name
-			}
+	if request.method == 'POST':
 
-			return HttpResponse(json.dumps(data))
+		#Credit Reward to this person (To be done)
+		username = get_username_from_token(request.META['HTTP_AUTHORIZATION'])
 
-		else:   #No dataset remaining
-			return HttpResponse(json.dumps(None))
+		data = json.loads(request.body.decode())
+
+		#Get job details (hence the final directory)
+		job = data['job']
+		result = data['result']
+
+		#check if directory is present, make one if not present
+		directory = settings.MEDIA_ROOT+'/'+job['customer']+'/'+job['job_id']+'/result/'
+		if not os.path.exists(directory):
+			os.makedirs(directory)
+
+		file_name = directory+job['file_name']+'.pickle'
+		with open(file_name,'wb') as f:
+			pickle.dump(result, f)
+
+		return HttpResponse("Data Return Successfull!")

@@ -14,6 +14,16 @@ import numpy as np
 #Other utility imports
 from datetime import datetime
 
+def get_username_from_token(token):
+
+	decoded_jwt = jwt.decode(
+						token,
+						settings.SECRET_KEY,
+						algorithm='HS256'
+					)
+
+	return decoded_jwt['username']
+
 @csrf_exempt
 def login(request):
 
@@ -90,7 +100,9 @@ def test_upload(request):
 
 	if request.method == 'POST':
 
-		print(json.loads(request.body.decode()))
+		username = get_username_from_token(request.META['HTTP_AUTHORIZATION'])
+
+		print(username,json.loads(request.body.decode()))
 		# data=json.loads(request.body.decode())
 		# with open('upload.txt','a') as f:
 		# 	f.write(data['text'])

@@ -11,8 +11,10 @@ function setupIPC () {
 
 	//set up python script launch and exit
 	ipcMain.on('toggle-work', (event, jobStatus) => {
-		if (jobStatus)
-			pythonScript = spawn('python', ['src/back-end/syscall/run.py']);
+		if (jobStatus) {
+			pythonScript = spawn('python', ['src/back-end/run.py']);
+			pythonScript.stdout.on('data', (data) => console.log(`child stdout:\n${data}`));
+		}		  
 		else
 			pythonScript.kill('SIGINT');
 	});
