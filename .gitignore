@@ -10,4 +10,4 @@
 node_modules/
 dist/
 _pycache_
-media
+server/distml/media
