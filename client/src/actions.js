@@ -52,7 +52,6 @@ export const registerAction = (userdata, history) => dispatch => {
 
             })
             .catch(error => {
-                console.log(error);
                 dispatch([
                     {
                         type: C.TOGGLE_LOADING
@@ -203,3 +202,40 @@ export const toggleWorkingAction = (jobStatus) => {
 
     return { type: C.TOGGLE_WORK };
 };
+
+export const datasetUploadAction = (dataset) => dispatch => {
+    
+    dispatch({ type: C.TOGGLE_LOADING });
+
+    api.post('ml/dataset_upload/', dataset, { headers: {'Content-Type': 'multipart/form-data'}})
+        .then(response => {
+            dispatch([
+                {
+                    type: C.TOGGLE_LOADING
+                },
+                {
+                    type: C.ADD_MESSAGE,
+                    payload: {
+                        type: C.MESSAGE_TYPES.SUCCESS,
+                        text: 'Dataset Uploaded Successfully',
+                        timeoutFunction: setTimeout(() => dispatch(clearMessageAction()),2000)
+                    }
+                }
+            ])
+        })
+        .catch(error => {
+            dispatch([
+                {
+                    type: C.TOGGLE_LOADING
+                },
+                {
+                    type: C.ADD_MESSAGE,
+                    payload: {
+                        type: C.MESSAGE_TYPES.ERROR,
+                        text: 'Dataset Upload Failed',
+                        timeoutFunction: setTimeout(() => dispatch(clearMessageAction()),2000)
+                    }
+                }
+            ])
+        });
+}

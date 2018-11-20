@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -49,13 +49,15 @@ def dataset_upload(request):
 
 	if request.method == 'POST':
 
-		# username = get_username_from_token(request.META['HTTP_AUTHORIZATION'])
+		username = get_username_from_token(request.META['HTTP_AUTHORIZATION'])
 		dataset = request.FILES['dataset']
 
 		#Split save the file
-		split_save(dataset, 'strategist')
+		split_save(dataset, username)
 
 		return HttpResponse("Done !!")
+	else:
+		return HttpResponseForbidden()
 
 def get_next_block():
 
