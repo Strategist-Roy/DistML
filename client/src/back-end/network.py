@@ -16,6 +16,9 @@ import random
 # Third-party libraries
 import numpy as np
 from sklearn.datasets import make_moons
+from numpy import genfromtxt
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.model_selection import train_test_split
 
 class Network(object):
 
@@ -42,8 +45,8 @@ class Network(object):
             a = sigmoid(np.dot(w, a)+b)
         return a
 
-    def SGD(self, training_data, epochs, mini_batch_size, eta,test_data=None):
-        self.update_mini_batch(training_data, eta)
+    def SGD(self, training_data, epochs, mini_batch_size, eta,
+            test_data=None):
         """Train the neural network using mini-batch stochastic
         gradient descent.  The ``training_data`` is a list of tuples
         ``(x, y)`` representing the training inputs and the desired
@@ -52,20 +55,21 @@ class Network(object):
         network will be evaluated against the test data after each
         epoch, and partial progress printed out.  This is useful for
         tracking progress, but slows things down substantially."""
-        # if test_data: n_test = len(test_data)
-        # n = len(training_data)
-        # for j in xrange(epochs):
-        #     random.shuffle(training_data)
-        #     mini_batches = [
-        #         training_data[k:k+mini_batch_size]
-        #         for k in xrange(0, n, mini_batch_size)]
-        #     for mini_batch in mini_batches:
-            #     self.update_mini_batch(mini_batch, eta)
-            # if test_data:
-            #     print("Epoch {0}: {1} / {2}".format(
-            #         j, self.evaluate(test_data), n_test))
-            # else:
-            #     print("Epoch {0} complete".format(j))
+        if test_data:
+            n_test = len(test_data)
+        n = len(training_data)
+        for j in range(epochs):
+            random.shuffle(training_data)
+            mini_batches = [
+                training_data[k:k+mini_batch_size]
+                for k in range(0, n, mini_batch_size)]
+            for mini_batch in mini_batches:
+                self.update_mini_batch(mini_batch, eta)
+            if test_data:
+                print ("Epoch {0}: {1} / {2}".format(
+                    j, self.evaluate(test_data), n_test))
+            else:
+                print ("Epoch {0} complete".format(j))
 
     def update_mini_batch(self, mini_batch, eta):
         """Update the network's weights and biases by applying
@@ -99,6 +103,7 @@ class Network(object):
             zs.append(z)
             activation = sigmoid(z)
             activations.append(activation)
+
         # backward pass
         delta = self.cost_derivative(activations[-1], y) * \
             sigmoid_prime(zs[-1])
@@ -130,6 +135,7 @@ class Network(object):
     def cost_derivative(self, output_activations, y):
         """Return the vector of partial derivatives \partial C_x /
         \partial a for the output activations."""
+        # print(output_activations, y)
         return (output_activations-y)
 
 #### Miscellaneous functions
@@ -141,8 +147,34 @@ def sigmoid_prime(z):
     """Derivative of the sigmoid function."""
     return sigmoid(z)*(1-sigmoid(z))
 
+def vectorized_result(num_classes,j):
+    """Return a 10-dimensional unit vector with a 1.0 in the jth
+    position and zeroes elsewhere.  This is used to convert a digit
+    (0...9) into a corresponding desired output from the neural
+    network."""
+    e = np.zeros((num_classes, 1))
+    e[j] = 1.0
+    return e
+
 if __name__ == '__main__':
-    X, y = make_moons(n_samples=200)
-    with open('dataset_.csv', 'w') as f:
-        for a,b in zip(X,y):
-            f.write(str(a[0])+','+str(a[1])+','+str(b)+'\n')
+
+    data = genfromtxt('dataset_.csv',delimiter=',')
+    shape = data.shape
+
+    X = data[:,:-1]    #skip last column
+    Y = data[:,-1]	   #last column is the target
+    x_dims = X.shape[1]
+    num_classes = len(np.unique(Y))
+
+    net = Network([x_dims,3,4,num_classes])
+
+    X_train, X_test, y_train, y_test = train_test_split(X,Y)
+
+    training_inputs = [np.reshape(x,(x_dims,1)) for x in X_train]
+    training_outputs = [vectorized_result(num_classes,int(y)) for y in y_train]
+    training_data = list(zip(training_inputs,training_outputs))
+
+    test_inputs = [np.reshape(x,(x_dims, 1)) for x in X_test]
+    test_data = list(zip(test_inputs, y_test))
+
+    net.SGD(training_data, 30, 10, 3.0, test_data=test_data)
