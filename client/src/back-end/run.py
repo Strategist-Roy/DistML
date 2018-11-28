@@ -19,6 +19,7 @@ with open('src/initialState.json') as f:
 
     while True:
         time.sleep(1)    #To delay and observe
+        
         #Get next file to train from redis server
         r = requests.get(serverUrl+'ml/dispatch/', headers=headers)
         data = r.json()
