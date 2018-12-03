@@ -21,7 +21,7 @@ export default withStyles(styles)(({ jobStatus,
                                         datasetUpload,
                                         getJobStatus,
                                         testDataUpload,
-                                        classes }) => (
+                                        classes, ...rest }) => (
     <Grid 
         container 
         spacing={16}
@@ -37,7 +37,11 @@ export default withStyles(styles)(({ jobStatus,
             </div>
         </Grid>
         <Grid item xs={6}>
-            <JobList jobs={jobs} testDataUpload={testDataUpload} getJobStatus={getJobStatus} />
+            <JobList jobs={jobs} 
+                testDataUpload={testDataUpload} 
+                getJobStatus={getJobStatus} 
+                {...rest}
+            />
         </Grid>
     </Grid>
 ));

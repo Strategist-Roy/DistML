@@ -6,6 +6,7 @@ from django.conf import settings
 import os, json, redis, jwt, pickle, time, hashlib
 import pandas as pd
 import numpy as np
+from numpy import genfromtxt
 
 #Import models
 from django.contrib.auth.models import User
@@ -207,12 +208,31 @@ def evaluate(request):
 	if request.method == 'POST':
 
 		username = get_username_from_token(request.META['HTTP_AUTHORIZATION'])
-		test_data = request.FILES['test_data']
+		test_file = request.FILES['test_data']
 		job_id = request.POST['job_id']
 
-		print(test_data, job_id)
+		directory_prefix = settings.MEDIA_ROOT + '/' + username + '/' + job_id
+		#Initialize Model for final weight updates
+		(biases, weights, eta) = pickle.load(open(directory_prefix+'/parameters.pickle','rb'))
+		net = Network(biases, weights, eta)
 
-		return HttpResponse("Test Data Uploaded Successfully")
+		data = genfromtxt(test_file,delimiter=',')
+		X_test = data[:,:-1]    #skip last column
+		y_test = data[:,-1]	   #last column is the target
+		x_dims = X_test.shape[1]
+		total = X_test.shape[0]
+
+		test_inputs = [np.reshape(x,(x_dims, 1)) for x in X_test]
+		test_data = list(zip(test_inputs, y_test))
+
+		result = net.evaluate(test_data)
+
+		user = User.objects.get(username=username)
+		job = Jobs.objects.get(user=user,job=job_id)
+		job.accuracy = str(round(100.0*result/total,2))
+		job.save()
+
+		return HttpResponse("Successfully Evaluated on Test Data")
 
 
 

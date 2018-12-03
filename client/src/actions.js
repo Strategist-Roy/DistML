@@ -289,12 +289,13 @@ export const getJobStatusAction = () => dispatch => {
     dispatch({ type: C.TOGGLE_LOADING });
 }
 
-export const testDataUploadAction = (testData) => dispatch => {
+export const testDataUploadAction = (testData, history) => dispatch => {
     
     dispatch({ type: C.TOGGLE_LOADING });
 
     api.post('ml/evaluate/', testData, { headers: {'Content-Type': 'multipart/form-data'}})
         .then(response => {
+            console.log(response.data);
             dispatch([
                 {
                     type: C.TOGGLE_LOADING
@@ -307,9 +308,12 @@ export const testDataUploadAction = (testData) => dispatch => {
                         timeoutFunction: setTimeout(() => dispatch(clearMessageAction()),2000)
                     }
                 }
-            ])
+            ]);
+
+            dispatch(getJobStatusAction());
         })
         .catch(error => {
+            console.log(error);
             dispatch([
                 {
                     type: C.TOGGLE_LOADING

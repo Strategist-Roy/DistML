@@ -31,9 +31,9 @@ const mapDispatchToProps = dispatch => ({
             getJobStatusAction()
         )
     },
-    testDataUpload(testData) {
+    testDataUpload(testData, history) {
         dispatch(
-            testDataUploadAction(testData)
+            testDataUploadAction(testData, history)
         )
     },
 });

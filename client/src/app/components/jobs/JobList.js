@@ -7,7 +7,8 @@ import {
     TableCell,
     TableBody,
     TableRow,
-    IconButton
+    IconButton,
+    Tooltip
 } from '@material-ui/core';
 
 import {
@@ -59,13 +60,12 @@ class JobList extends React.Component {
     }
 
     uploadFile = (job) => {
-        // event.preventDefault();
 
         var formData = new FormData();
         formData.append('test_data', event.target.files[0]);
         formData.append('job_id', job);
 
-        this.props.testDataUpload(formData);
+        this.props.testDataUpload(formData, this.props.history);
         this.fileInput.current.value = '';
     }
 
@@ -99,8 +99,10 @@ class JobList extends React.Component {
                                         disableTouchRipple
                                         className={classes.uploadBtn}
                                         component='label'
-                                    >
-                                        <UploadIcon />
+                                    >   
+                                        <Tooltip title='Check Accuracy'>
+                                            <UploadIcon />                                        
+                                        </Tooltip>
                                         <input
                                             ref={this.fileInput}
                                             onChange={() => this.uploadFile(each.job)}
@@ -113,7 +115,7 @@ class JobList extends React.Component {
                                 }                    
                             </CustomTableCell>
                             <CustomTableCell>
-                                {each.accuracy}
+                                {each.accuracy}%
                             </CustomTableCell>
                         </TableRow>
                     )
