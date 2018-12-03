@@ -62,6 +62,7 @@ def split_save(file,username):
 
 	#split into chunks and save
 	conn = redis.Redis('localhost')
+	conn.set(username+';'+job_id, '0')
 
 	for i in range(0,l,10):
 		file_name = str(int(i/10))
@@ -101,6 +102,11 @@ def get_next_block():
 		customer = chunks[0]
 		job_id = chunks[1]
 		file_name = chunks[2]
+
+		#get epoch count
+		num_epochs = int(conn.get(customer+';'+job_id))
+		if (num_epochs == settings.NUM_EPOCHS):
+			continue    #continue popping till empty
 		
 		#check if result is already present, only push to redis queue if output is still not present
 		directory = settings.MEDIA_ROOT+'/'+customer+'/'+job_id+'/result/'
@@ -123,6 +129,20 @@ def dispatch(request):
 
 		return HttpResponse(json.dumps(data))
 
+def summarize(customer, job_id):
+	directory_prefix = settings.MEDIA_ROOT+'/'+customer+'/'+job_id
+
+	#Initialize Model for final weight updates
+	(biases, weights, eta) = pickle.load(open(directory_prefix+'/parameters.pickle','rb'))
+	net = Network(biases, weights, eta)
+
+	for fname in os.listdir(directory_prefix+'/result/'):
+		nabla_b, nabla_w, batch_size = pickle.load(open(directory_prefix+'/result/'+fname,'rb'))
+		net.accumulate(nabla_b, nabla_w, batch_size)
+		os.remove(directory_prefix+'/result/'+fname)
+
+	pickle.dump((net.biases, net.weights, eta),open(directory_prefix+'/parameters.pickle','wb'))
+
 @csrf_exempt
 def submit_results(request):
 
@@ -132,16 +152,25 @@ def submit_results(request):
 		# username = get_username_from_token(request.META['HTTP_AUTHORIZATION'])
 
 		data=pickle.loads(request.body)
-		print(data)
 		
 		customer = data['job']['customer']
 		job_id = data['job']['job_id']
 		file_name = data['job']['file_name']
 
-		directory = settings.MEDIA_ROOT + '/' + customer + '/' + job_id + '/result/'
-		file_name_check = directory + file_name+'.pickle'
+		directory_prefix = settings.MEDIA_ROOT + '/' + customer + '/' + job_id
+		file_name_check = directory_prefix + '/result/' + file_name+'.pickle'
 		if not os.path.isfile(file_name_check):
 			pickle.dump(data['result'],open(file_name_check,'wb'))
+
+			num_dataset = len(os.listdir(directory_prefix+'/dataset/'))
+			num_result = len(os.listdir(directory_prefix+'/result/'))
+			if (num_dataset == num_result):
+				summarize(customer, job_id)
+
+				#increase epoch count
+				conn = redis.Redis('localhost')
+				num_epochs = int(conn.get(customer+';'+job_id))+1
+				conn.set(customer+';'+job_id, str(num_epochs))
 		
 		return HttpResponse("Successfully Submitted Parameters!!")
 
@@ -163,53 +192,49 @@ def get_jobs(request):
 
 		return JsonResponse(data)
 
-def summarize(username, job_id):
-	directory_prefix = settings.MEDIA_ROOT+'/'+username+'/'+job_id
-
-	#Initialize Model for final weight updates
-	(biases, weights, eta) = pickle.load(open(directory_prefix+'/parameters.pickle','rb'))
-	net = Network(biases, weights, eta)
-
-	for fname in os.listdir(directory_prefix+'/result/'):
-		nabla_b, nabla_w, batch_size = pickle.load(open(directory_prefix+'/result/'+fname,'rb'))
-		net.accumulate(nabla_b, nabla_w, batch_size)
-
-	pickle.dump((net.biases, net.weights, eta),open(directory_prefix+'/parameters.pickle','wb'))
-
 @csrf_exempt
-def summarize(request):
+def download_model(request):
 
 	if request.method == 'POST':
-
 		username = get_username_from_token(request.META['HTTP_AUTHORIZATION'])
 		data=json.loads(request.body.decode())
 		job_id = data['job_id']
 
-		directory_prefix = settings.MEDIA_ROOT+'/'+username+'/'+job_id
+		summarize(username,job_id)
 
-		#check before summarization that all parts have been pickled
-		#To do that count the number of dataset and result items
-		num_dataset = len(os.listdir(directory_prefix+'/dataset/'))
-		num_result = len(os.listdir(directory_prefix+'/result/'))
-		if (num_dataset != num_result):
-			return HttpResponse("Still processing")
-
-		#Initialize Model for final weight updates
-		(biases, weights, eta) = pickle.load(open(directory_prefix+'/parameters.pickle','rb'))
-		net = Network(biases, weights, eta)
-
-		for fname in os.listdir(directory_prefix+'/result/'):
-			nabla_b, nabla_w, batch_size = pickle.load(open(directory_prefix+'/result/'+fname,'rb'))
-			net.accumulate(nabla_b, nabla_w, batch_size)
-
-		pickle.dump((net.biases, net.weights, eta),open(directory_prefix+'/parameters.pickle','wb'))
-		
-		#update database as summarized
-		user = User.objects.get(username=username)
-		job = Jobs.objects.get(user=user,job=job_id)
-		job.summarized = True
-		job.save()
-		
 		return HttpResponse("Done Successfully!!")
+
+	# if request.method == 'POST':
+
+	# 	username = get_username_from_token(request.META['HTTP_AUTHORIZATION'])
+	# 	data=json.loads(request.body.decode())
+	# 	job_id = data['job_id']
+
+	# 	directory_prefix = settings.MEDIA_ROOT+'/'+username+'/'+job_id
+
+	# 	#check before summarization that all parts have been pickled
+	# 	#To do that count the number of dataset and result items
+	# 	num_dataset = len(os.listdir(directory_prefix+'/dataset/'))
+	# 	num_result = len(os.listdir(directory_prefix+'/result/'))
+	# 	if (num_dataset != num_result):
+	# 		return HttpResponse("Still processing")
+
+	# 	#Initialize Model for final weight updates
+	# 	(biases, weights, eta) = pickle.load(open(directory_prefix+'/parameters.pickle','rb'))
+	# 	net = Network(biases, weights, eta)
+
+	# 	for fname in os.listdir(directory_prefix+'/result/'):
+	# 		nabla_b, nabla_w, batch_size = pickle.load(open(directory_prefix+'/result/'+fname,'rb'))
+	# 		net.accumulate(nabla_b, nabla_w, batch_size)
+
+	# 	pickle.dump((net.biases, net.weights, eta),open(directory_prefix+'/parameters.pickle','wb'))
+		
+	# 	#update database as summarized
+	# 	user = User.objects.get(username=username)
+	# 	job = Jobs.objects.get(user=user,job=job_id)
+	# 	job.summarized = True
+	# 	job.save()
+		
+	# 	return HttpResponse("Done Successfully!!")
 
 
