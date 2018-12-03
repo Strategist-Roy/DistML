@@ -23,26 +23,28 @@ import pickle
 
 class Network(object):
 
-    def __init__(self, sizes):
-        """The list ``sizes`` contains the number of neurons in the
-        respective layers of the network.  For example, if the list
-        was [2, 3, 1] then it would be a three-layer network, with the
-        first layer containing 2 neurons, the second layer 3 neurons,
-        and the third layer 1 neuron.  The biases and weights for the
-        network are initialized randomly, using a Gaussian
-        distribution with mean 0, and variance 1.  Note that the first
-        layer is assumed to be an input layer, and by convention we
-        won't set any biases for those neurons, since biases are only
-        ever used in computing the outputs from later layers."""
-        self.num_layers = len(sizes)
-        self.sizes = sizes
-        # self.biases = [np.zeros((y,1)) for y in sizes[1:]]
-        # self.weights = [np.zeros((y, x))
-        #                 for x, y in zip(sizes[:-1], sizes[1:])]
-        
-        self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
-        self.weights = [np.random.randn(y, x)
-                        for x, y in zip(sizes[:-1], sizes[1:])]
+    # def __init__(self, sizes):
+    #     """The list ``sizes`` contains the number of neurons in the
+    #     respective layers of the network.  For example, if the list
+    #     was [2, 3, 1] then it would be a three-layer network, with the
+    #     first layer containing 2 neurons, the second layer 3 neurons,
+    #     and the third layer 1 neuron.  The biases and weights for the
+    #     network are initialized randomly, using a Gaussian
+    #     distribution with mean 0, and variance 1.  Note that the first
+    #     layer is assumed to be an input layer, and by convention we
+    #     won't set any biases for those neurons, since biases are only
+    #     ever used in computing the outputs from later layers."""
+    #     self.num_layers = len(sizes)
+    #     self.sizes = sizes
+    #     self.biases = [np.random.randn(y, 1) for y in sizes[1:]]
+    #     self.weights = [np.random.randn(y, x)
+    #                     for x, y in zip(sizes[:-1], sizes[1:])]
+
+    def __init__(self, biases, weights, eta):
+        self.num_layers = len(biases) + 1
+        self.biases = biases
+        self.weights = weights
+        self.eta = eta
 
     def feedforward(self, a):
         """Return the output of the network if ``a`` is input."""
@@ -70,7 +72,6 @@ class Network(object):
                 for k in range(0, n, mini_batch_size)]
             for mini_batch in mini_batches:
                 self.update_mini_batch(mini_batch, eta)
-                return
             if test_data:
                 print ("Epoch {0}: {1} / {2}".format(
                     j, self.evaluate(test_data), n_test))
@@ -82,19 +83,16 @@ class Network(object):
         gradient descent using backpropagation to a single mini batch.
         The ``mini_batch`` is a list of tuples ``(x, y)``, and ``eta``
         is the learning rate."""
-        print(mini_batch[:3])
         nabla_b = [np.zeros(b.shape) for b in self.biases]
         nabla_w = [np.zeros(w.shape) for w in self.weights]
-        for each in mini_batch:
-            print(each)
-            break
-        #     delta_nabla_b, delta_nabla_w = self.backprop(x, y)
-        #     nabla_b = [nb+dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
-        #     nabla_w = [nw+dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
-        # self.weights = [w-(eta/len(mini_batch))*nw
-        #                 for w, nw in zip(self.weights, nabla_w)]
-        # self.biases = [b-(eta/len(mini_batch))*nb
-        #                for b, nb in zip(self.biases, nabla_b)]
+        for x, y in mini_batch:
+            delta_nabla_b, delta_nabla_w = self.backprop(x, y)
+            nabla_b = [nb+dnb for nb, dnb in zip(nabla_b, delta_nabla_b)]
+            nabla_w = [nw+dnw for nw, dnw in zip(nabla_w, delta_nabla_w)]
+        self.weights = [w-(eta/len(mini_batch))*nw
+                        for w, nw in zip(self.weights, nabla_w)]
+        self.biases = [b-(eta/len(mini_batch))*nb
+                       for b, nb in zip(self.biases, nabla_b)]
 
     def backprop(self, x, y):
         """Return a tuple ``(nabla_b, nabla_w)`` representing the
@@ -167,32 +165,37 @@ def vectorized_result(num_classes,j):
 
 if __name__ == '__main__':
 
-    data = genfromtxt('dataset_.csv',delimiter=',')
-    shape = data.shape
-    # print(data[:5])
+    # data = genfromtxt('train.csv',delimiter=',')
 
-    X = data[:,:-1]    #skip last column
-    Y = data[:,-1]	   #last column is the target
-    x_dims = X.shape[1]
-    num_classes = len(np.unique(Y))
+    # X_train = data[:,:-1]    #skip last column
+    # y_train = data[:,-1]	   #last column is the target
+    # x_dims = X_train.shape[1]
+    # num_classes = len(np.unique(y_train))
 
-    net = Network([x_dims,3,4,num_classes])
+    # data=genfromtxt('test.csv',delimiter=',')
+    # X_test = data[:,:-1]
+    # y_test = data[:,-1]
 
-    X_train, X_test, y_train, y_test = train_test_split(X,Y)
+    # training_inputs = [np.reshape(x,(x_dims,1)) for x in X_train]
+    # training_outputs = [vectorized_result(num_classes,int(y)) for y in y_train]
+    # training_data = list(zip(training_inputs,training_outputs))
 
-    training_inputs = [np.reshape(x,(x_dims,1)) for x in X_train]
-    training_outputs = [vectorized_result(num_classes,int(y)) for y in y_train]
-    training_data = list(zip(training_inputs,training_outputs))
+    # test_inputs = [np.reshape(x,(x_dims, 1)) for x in X_test]
+    # test_data = list(zip(test_inputs, y_test))
 
-    # print(training_data[:3])
+    # net=Network([2,3,4,2])
+    # net.SGD(training_data, 1, 10, 3.0, test_data=test_data)
+
+    #from pickle file
+    data=genfromtxt('test.csv',delimiter=',')
+    X_test = data[:,:-1]
+    y_test = data[:,-1]
+    x_dims = X_test.shape[1]
 
     test_inputs = [np.reshape(x,(x_dims, 1)) for x in X_test]
     test_data = list(zip(test_inputs, y_test))
 
-    net.SGD(training_data, 30, 10, 3.0, test_data=test_data)
-
-    pickle.dump(net,open('model.pickle','wb'))
-
-    net=pickle.load(open('model.pickle','rb'))
-    # print(net.num_layers)
+    biases, weights, eta = pickle.load(open('parameters.pickle','rb'))
+    net=Network(biases, weights, eta)
+    print(net.evaluate(test_data))
 

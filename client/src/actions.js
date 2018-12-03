@@ -94,10 +94,12 @@ export const loginAction = (credentials, history) => dispatch => {
                 {
                     type: C.LOGIN,
                     payload: {
+                        //load all sort of data upon login
                         username: credentials.username,
                         token: response.data.token,
                         name: response.data.name,
-                        email: response.data.email
+                        email: response.data.email,
+                        jobs: response.data.jobs   
                     }
                 },
                 {
@@ -238,4 +240,54 @@ export const datasetUploadAction = (dataset) => dispatch => {
                 }
             ])
         });
+}
+
+export const downloadModelAction = (job) => dispatch => {
+
+    dispatch({ type: C.TOGGLE_LOADING });
+
+    // const { ipcRenderer } = window.require('electron');
+
+    // //ask main process to toggle child_process
+    // ipcRenderer.send('toggle-work', !jobStatus);
+
+    // return { type: C.TOGGLE_WORK };
+
+    api.post('ml/summarize/', { job_id : job })
+        .then(response => {
+            dispatch([
+                { 
+                    type: C.TOGGLE_LOADING 
+                },
+                {
+                    type: C.FLIP_JOB_STATUS,
+                    payload: job
+                },
+                {
+                    type: C.ADD_MESSAGE,
+                    payload: {
+                        type: C.MESSAGE_TYPES.SUCCESS,
+                        text: 'Model Downloaded Successfully',
+                        timeoutFunction: setTimeout(() => dispatch(clearMessageAction()),2000)
+                    }
+                }
+            ]);
+        })
+        .catch(error => {
+            dispatch([
+                {
+                    type: C.TOGGLE_LOADING
+                },
+                {
+                    type: C.ADD_MESSAGE,
+                    payload: {
+                        type: C.MESSAGE_TYPES.ERROR,
+                        text: 'Model Summarization Failed',
+                        timeoutFunction: setTimeout(() => dispatch(clearMessageAction()),2000)
+                    }
+                }
+            ])
+        });
+
+    dispatch({ type: C.TOGGLE_LOADING });
 }

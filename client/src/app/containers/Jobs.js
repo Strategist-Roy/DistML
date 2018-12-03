@@ -5,11 +5,13 @@ import { withRouter } from 'react-router';
 import Jobs from '../components/jobs/Main';
 import { 
     toggleWorkingAction,
-    datasetUploadAction
+    datasetUploadAction,
+    downloadModelAction,
 } from '../../actions';
 
 const mapStateToProps = (state, props) => ({
-    jobStatus: state.jobStatus.working
+    jobStatus: state.jobStatus.working,
+    jobs: state.jobStatus.jobs,
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -22,7 +24,12 @@ const mapDispatchToProps = dispatch => ({
         dispatch(
             datasetUploadAction(dataset)
         )
-    }
+    },
+    downloadModel(job) {
+        dispatch(
+            downloadModelAction(job)
+        )
+    },
 });
 
 export default withRouter(connect(mapStateToProps, mapDispatchToProps)(Jobs));

@@ -9,6 +9,7 @@ export default {
     ADD_MESSAGE: 'ADD_MESSAGE',
     CLEAR_MESSAGE: 'CLEAR_MESSAGE',
     NONE: 'NONE',      //A none-type action for special purposes
+    FLIP_JOB_STATUS: 'FLIP_JOB_STATUS',
 
     // Other constants
     MESSAGE_TYPES: {

@@ -5,7 +5,7 @@ const fs = require('fs');
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let win;
-let pythonScript;
+let pythonScript, downloadModelScript;
 
 function setupIPC () {
 
@@ -19,6 +19,11 @@ function setupIPC () {
 			pythonScript.kill('SIGINT');
 	});
 
+	//set up download model script to download pickled models
+	ipcMain.on('download-model', (event, job) => {
+		downloadModelScript = spawn('python', ['src/back-end/download.py']);
+		downloadModelScript.stdout.on('data', (data) => console.log(`child stdout:\n${data}`));
+	});
 }
 
 function cleanUp () {
@@ -32,8 +37,12 @@ function cleanUp () {
 	if (pythonScript!==undefined && !pythonScript.killed)
 		pythonScript.kill('SIGINT');
 
+	if (downloadModelScript!==undefined && !downloadModelScript.killed)
+		downloadModelScript.kill('SIGINT');
+
 	win = null;
 	pythonScript = null;
+	downloadModelScript = null;
 }
 
 function createWindow () {

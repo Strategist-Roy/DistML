@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 from django.conf import settings
@@ -163,13 +163,27 @@ def get_jobs(request):
 
 		return JsonResponse(data)
 
+def summarize(username, job_id):
+	directory_prefix = settings.MEDIA_ROOT+'/'+username+'/'+job_id
+
+	#Initialize Model for final weight updates
+	(biases, weights, eta) = pickle.load(open(directory_prefix+'/parameters.pickle','rb'))
+	net = Network(biases, weights, eta)
+
+	for fname in os.listdir(directory_prefix+'/result/'):
+		nabla_b, nabla_w, batch_size = pickle.load(open(directory_prefix+'/result/'+fname,'rb'))
+		net.accumulate(nabla_b, nabla_w, batch_size)
+
+	pickle.dump((net.biases, net.weights, eta),open(directory_prefix+'/parameters.pickle','wb'))
+
 @csrf_exempt
 def summarize(request):
 
-	if request.method == 'GET':
+	if request.method == 'POST':
 
 		username = get_username_from_token(request.META['HTTP_AUTHORIZATION'])
-		job_id = request.GET['job_id']
+		data=json.loads(request.body.decode())
+		job_id = data['job_id']
 
 		directory_prefix = settings.MEDIA_ROOT+'/'+username+'/'+job_id
 
@@ -189,6 +203,13 @@ def summarize(request):
 			net.accumulate(nabla_b, nabla_w, batch_size)
 
 		pickle.dump((net.biases, net.weights, eta),open(directory_prefix+'/parameters.pickle','wb'))
+		
+		#update database as summarized
+		user = User.objects.get(username=username)
+		job = Jobs.objects.get(user=user,job=job_id)
+		job.summarized = True
+		job.save()
+		
 		return HttpResponse("Done Successfully!!")
 
 

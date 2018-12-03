@@ -55,6 +55,23 @@ const token = (state = null, action) => {
     }
 }
 
+const jobs = (state = [], action) => {
+    switch(action.type) {
+        case C.LOGIN:
+            return action.payload.jobs;
+        case C.LOGOUT:
+            return []
+        case C.FLIP_JOB_STATUS:
+            return state.map(each => {
+                if (each.job == action.payload)
+                    each.summarized=true;
+                return each;
+            });
+        default: 
+            return state;
+    }
+}
+
 const loginState = (state = false, action) => {
     switch(action.type) {
         case C.LOGIN:
@@ -125,6 +142,7 @@ export default combineReducers({
         usernameAvailable,
     }),
     jobStatus: combineReducers({
-        working
+        working,
+        jobs
     }),
 });

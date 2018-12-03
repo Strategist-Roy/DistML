@@ -16,10 +16,11 @@ import {
 
 const styles = theme => ({
     buttonContainer: {
-        position: 'relative',
-        height: '100px',
-        top: 'calc((100% - 100px)/2)',
+        // position: 'relative',
+        height: '160px',
+        // top: 'calc((100% - 100px)/2)',
         textAlign: 'center',
+        margin: 20,
     },
     icon: {
         width: 80,

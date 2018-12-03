@@ -3,9 +3,11 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.files.storage import FileSystemStorage
 from django.conf import settings
 from django.contrib.auth import authenticate, login as auth_login
+
 import os, time, hashlib, redis, json, jwt
 from .models import AppUsers
 from django.contrib.auth.models import User
+from datamodels.models import Jobs
 
 #Perform Machine Learning imports
 import pandas as pd
@@ -46,10 +48,23 @@ def login(request):
 							settings.SECRET_KEY,
 							algorithm = 'HS256'
 						).decode('utf-8')
+
+			#Get all jobs corresponding to the particular user
+			jobs = Jobs.objects.filter(user=user)
+			jobData = []
+
+			if jobs.exists():
+				for each in jobs:
+					jobData.append({
+						'job': each.job,
+						'summarized': each.summarized
+					})
+
 			return JsonResponse({
 									'name': app_user.name,
 									'token': jwt_token,
-									'email': user.email
+									'email': user.email,
+									'jobs': jobData
 								})
 
 		else:

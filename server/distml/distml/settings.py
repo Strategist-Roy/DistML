@@ -138,6 +138,7 @@ MEDIA_URL = '/media/'
 
 # App specific Settings
 CHUNK_SIZE = 10
+NUM_EPOCHS = 30
 
 #CORS origin allow all domains
 CORS_ORIGIN_ALLOW_ALL = True

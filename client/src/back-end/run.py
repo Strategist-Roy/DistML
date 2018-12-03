@@ -31,7 +31,7 @@ def process_data(model,dataset):
 
     return (nabla_b, nabla_w, X.shape[0])
 
-with open('../initialState.json') as f:
+with open('src/initialState.json') as f:
 
     #Get jwt_token
     state = json.load(f)
@@ -42,7 +42,7 @@ with open('../initialState.json') as f:
 
     while True:
         # time.sleep(1)    #To delay and observe
-        
+
         #Get next file to train from redis server
         r = requests.get(serverUrl+'ml/dispatch/', headers=headers)
         data = r.json()
