@@ -64,8 +64,8 @@ def split_save(file,username):
 	conn = redis.Redis('localhost')
 	conn.set(username+';'+job_id, '0')
 
-	for i in range(0,l,10):
-		file_name = str(int(i/10))
+	for i in range(0,l,chunk):
+		file_name = str(int(i/chunk))
 		df[i:min(i+chunk,l)].to_csv(dataset_path+file_name+'.csv',index=False)
 
 		#Push into Redis List
@@ -171,14 +171,19 @@ def submit_results(request):
 				conn = redis.Redis('localhost')
 				num_epochs = int(conn.get(customer+';'+job_id))+1
 				conn.set(customer+';'+job_id, str(num_epochs))
+
+				if (num_epochs == settings.NUM_EPOCHS):
+					user = User.objects.get(username=customer)
+					job = Jobs.objects.get(user=user,job=job_id)
+					job.summarized=True
+					job.save()
 		
 		return HttpResponse("Successfully Submitted Parameters!!")
 
 @csrf_exempt
-def get_jobs(request):
+def get_status(request):
 
 	if request.method == 'GET':
-
 		username = get_username_from_token(request.META['HTTP_AUTHORIZATION'])
 
 		user = User.objects.get(username=username)
@@ -186,55 +191,28 @@ def get_jobs(request):
 
 		data = []
 
-		if jobs.exists():
+		if (jobs.exists()):
 			for each in jobs:
-				data.append(each.job)
+				data.append({
+					'job': each.job,
+					'summarized': each.summarized,
+					'accuracy': each.accuracy
+				})
 
-		return JsonResponse(data)
+		return JsonResponse({ 'jobs': data })
 
 @csrf_exempt
-def download_model(request):
+def evaluate(request):
 
 	if request.method == 'POST':
+
 		username = get_username_from_token(request.META['HTTP_AUTHORIZATION'])
-		data=json.loads(request.body.decode())
-		job_id = data['job_id']
+		test_data = request.FILES['test_data']
+		job_id = request.POST['job_id']
 
-		summarize(username,job_id)
+		print(test_data, job_id)
 
-		return HttpResponse("Done Successfully!!")
+		return HttpResponse("Test Data Uploaded Successfully")
 
-	# if request.method == 'POST':
-
-	# 	username = get_username_from_token(request.META['HTTP_AUTHORIZATION'])
-	# 	data=json.loads(request.body.decode())
-	# 	job_id = data['job_id']
-
-	# 	directory_prefix = settings.MEDIA_ROOT+'/'+username+'/'+job_id
-
-	# 	#check before summarization that all parts have been pickled
-	# 	#To do that count the number of dataset and result items
-	# 	num_dataset = len(os.listdir(directory_prefix+'/dataset/'))
-	# 	num_result = len(os.listdir(directory_prefix+'/result/'))
-	# 	if (num_dataset != num_result):
-	# 		return HttpResponse("Still processing")
-
-	# 	#Initialize Model for final weight updates
-	# 	(biases, weights, eta) = pickle.load(open(directory_prefix+'/parameters.pickle','rb'))
-	# 	net = Network(biases, weights, eta)
-
-	# 	for fname in os.listdir(directory_prefix+'/result/'):
-	# 		nabla_b, nabla_w, batch_size = pickle.load(open(directory_prefix+'/result/'+fname,'rb'))
-	# 		net.accumulate(nabla_b, nabla_w, batch_size)
-
-	# 	pickle.dump((net.biases, net.weights, eta),open(directory_prefix+'/parameters.pickle','wb'))
-		
-	# 	#update database as summarized
-	# 	user = User.objects.get(username=username)
-	# 	job = Jobs.objects.get(user=user,job=job_id)
-	# 	job.summarized = True
-	# 	job.save()
-		
-	# 	return HttpResponse("Done Successfully!!")
 
 

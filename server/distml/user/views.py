@@ -57,7 +57,8 @@ def login(request):
 				for each in jobs:
 					jobData.append({
 						'job': each.job,
-						'summarized': each.summarized
+						'summarized': each.summarized,
+						'accuracy': each.accuracy
 					})
 
 			return JsonResponse({

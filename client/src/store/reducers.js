@@ -61,12 +61,8 @@ const jobs = (state = [], action) => {
             return action.payload.jobs;
         case C.LOGOUT:
             return []
-        case C.FLIP_JOB_STATUS:
-            return state.map(each => {
-                if (each.job == action.payload)
-                    each.summarized=true;
-                return each;
-            });
+        case C.GET_JOBS:
+            return action.payload.jobs;
         default: 
             return state;
     }

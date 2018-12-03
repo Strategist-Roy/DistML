@@ -6,7 +6,8 @@ import Jobs from '../components/jobs/Main';
 import { 
     toggleWorkingAction,
     datasetUploadAction,
-    downloadModelAction,
+    getJobStatusAction,
+    testDataUploadAction,
 } from '../../actions';
 
 const mapStateToProps = (state, props) => ({
@@ -25,9 +26,14 @@ const mapDispatchToProps = dispatch => ({
             datasetUploadAction(dataset)
         )
     },
-    downloadModel(job) {
+    getJobStatus() {
         dispatch(
-            downloadModelAction(job)
+            getJobStatusAction()
+        )
+    },
+    testDataUpload(testData) {
+        dispatch(
+            testDataUploadAction(testData)
         )
     },
 });

@@ -11,8 +11,8 @@ import {
 } from '@material-ui/core';
 
 import {
-    ArrowDownward as DownloadIcon,
-    Done as DoneIcon
+    ArrowUpward as UploadIcon,
+    Cached as ProcessingIcon
 } from '@material-ui/icons';
 
 import {
@@ -29,7 +29,7 @@ const styles = theme => ({
             backgroundColor: theme.palette.background.default,
         },
     },
-    downloadBtn: {
+    uploadBtn: {
         color: lightBlue[500],
         '&:hover': {
             backgroundColor: 'transparent'
@@ -51,38 +51,77 @@ const CustomTableCell = withStyles(theme => ({
     },
 }))(TableCell);
 
-export default withStyles(styles)(({ jobs, downloadModel, classes }) => (
-    <Table className={classes.table}>
-        <TableHead>
-            <TableRow>
-                <CustomTableCell>Job ID</CustomTableCell>
-                <CustomTableCell>Download Model</CustomTableCell>
-            </TableRow>
-        </TableHead>
-        <TableBody>
-        {jobs.map((each,index) => 
-            (
-                <TableRow className={classes.row} key={index}>
-                    <CustomTableCell component="th" scope="row">
-                        {each.job}
-                    </CustomTableCell>
-                    <CustomTableCell>
-                        {each.summarized ?                            
-                            <DoneIcon style={{ color: green[500]}} />
-                            :
-                            <IconButton
-                                disableRipple
-                                disableTouchRipple
-                                className={classes.downloadBtn}
-                                onClick={() => downloadModel(each.job)}
-                            >
-                                <DownloadIcon />                      
-                            </IconButton>
-                        }                    
-                    </CustomTableCell>
-                </TableRow>
-            )
-        )}
-        </TableBody>
-    </Table>
-));
+class JobList extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.fileInput = React.createRef();
+    }
+
+    uploadFile = (job) => {
+        // event.preventDefault();
+
+        var formData = new FormData();
+        formData.append('test_data', event.target.files[0]);
+        formData.append('job_id', job);
+
+        this.props.testDataUpload(formData);
+        this.fileInput.current.value = '';
+    }
+
+    componentDidMount() {
+        this.props.getJobStatus();
+    }
+
+    render() {
+        const { jobs, classes } = this.props;
+
+        return (
+            <Table className={classes.table}>
+                <TableHead>
+                    <TableRow>
+                        <CustomTableCell>Job ID</CustomTableCell>
+                        <CustomTableCell>Status</CustomTableCell>
+                        <CustomTableCell>Accuracy</CustomTableCell>
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                {jobs.map((each,index) => 
+                    (
+                        <TableRow className={classes.row} key={index}>
+                            <CustomTableCell component="th" scope="row">
+                                {each.job}
+                            </CustomTableCell>
+                            <CustomTableCell>
+                                {each.summarized ?                            
+                                    <IconButton
+                                        disableRipple
+                                        disableTouchRipple
+                                        className={classes.uploadBtn}
+                                        component='label'
+                                    >
+                                        <UploadIcon />
+                                        <input
+                                            ref={this.fileInput}
+                                            onChange={() => this.uploadFile(each.job)}
+                                            style={{ display: 'none' }}
+                                            type="file"
+                                        />
+                                    </IconButton>
+                                    :
+                                    <ProcessingIcon style={{ color: lightBlue[500] }} />
+                                }                    
+                            </CustomTableCell>
+                            <CustomTableCell>
+                                {each.accuracy}
+                            </CustomTableCell>
+                        </TableRow>
+                    )
+                )}
+                </TableBody>
+            </Table>
+        );
+    }
+}
+
+export default withStyles(styles)(JobList);

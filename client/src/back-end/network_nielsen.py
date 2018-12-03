@@ -184,7 +184,7 @@ if __name__ == '__main__':
     # test_data = list(zip(test_inputs, y_test))
 
     # net=Network([2,3,4,2])
-    # net.SGD(training_data, 1, 10, 3.0, test_data=test_data)
+    # net.SGD(training_data, 30, 10, 3.0, test_data=test_data)
 
     #from pickle file
     data=genfromtxt('test.csv',delimiter=',')

@@ -137,8 +137,8 @@ MEDIA_ROOT  = os.path.join(BASE_DIR, 'media')
 MEDIA_URL = '/media/'
 
 # App specific Settings
-CHUNK_SIZE = 10
-NUM_EPOCHS = 30
+CHUNK_SIZE = 50
+NUM_EPOCHS = 60
 
 #CORS origin allow all domains
 CORS_ORIGIN_ALLOW_ALL = True

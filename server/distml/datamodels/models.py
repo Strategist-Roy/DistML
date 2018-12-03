@@ -6,10 +6,10 @@ class Jobs(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     job = models.CharField(max_length=100,default='')
     summarized = models.BooleanField(default=False)
-    chunks = models.IntegerField(default=0)
+    accuracy = models.CharField(max_length=10,default='0.00')
 
     def __str__(self):
-        return self.user.username+' '+self.job+' '+str(self.summarized)
+        return self.user.username+' '+self.job+' '+str(self.summarized)+' '+self.accuracy
 
     class Meta:
         verbose_name_plural = "User Jobs"

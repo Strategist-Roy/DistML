@@ -19,7 +19,8 @@ export default withStyles(styles)(({ jobStatus,
                                         jobs, 
                                         toggleWorking, 
                                         datasetUpload,
-                                        downloadModel,
+                                        getJobStatus,
+                                        testDataUpload,
                                         classes }) => (
     <Grid 
         container 
@@ -36,7 +37,7 @@ export default withStyles(styles)(({ jobStatus,
             </div>
         </Grid>
         <Grid item xs={6}>
-            <JobList jobs={jobs} downloadModel={downloadModel} />
+            <JobList jobs={jobs} testDataUpload={testDataUpload} getJobStatus={getJobStatus} />
         </Grid>
     </Grid>
 ));
