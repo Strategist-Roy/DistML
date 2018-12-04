@@ -178,6 +178,9 @@ def submit_results(request):
 					job = Jobs.objects.get(user=user,job=job_id)
 					job.summarized=True
 					job.save()
+				else:
+					for i in range(num_result):
+						conn.rpush('data',customer+';'+job_id+';'+str(i))
 		
 		return HttpResponse("Successfully Submitted Parameters!!")
 

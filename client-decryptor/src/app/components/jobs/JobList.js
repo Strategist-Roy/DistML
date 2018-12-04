@@ -93,7 +93,7 @@ class JobList extends React.Component {
                                 {each.job}
                             </CustomTableCell>
                             <CustomTableCell>
-                                {each.summarized ?                            
+                                {each.summarized ?
                                     <IconButton
                                         disableRipple
                                         disableTouchRipple
@@ -101,7 +101,7 @@ class JobList extends React.Component {
                                         component='label'
                                     >   
                                         <Tooltip title='Check Accuracy'>
-                                            <UploadIcon />                                        
+                                            <UploadIcon />
                                         </Tooltip>
                                         <input
                                             ref={this.fileInput}

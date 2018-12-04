@@ -10,7 +10,7 @@ import store from './store/index';
 window.store = store;
 window.__MUI_USE_NEXT_TYPOGRAPHY_VARIANTS__ = true;
 
-store.subscribe(() => { console.log(store.getState()) });
+// store.subscribe(() => { console.log(store.getState()) });
 
 const fs = window.require('fs');
 store.subscribe(() => fs.writeFile('src/initialState.json', JSON.stringify(store.getState()), (error) => { if (error) throw error; }));
