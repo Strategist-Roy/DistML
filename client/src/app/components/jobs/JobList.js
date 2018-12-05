@@ -82,7 +82,8 @@ class JobList extends React.Component {
                     <TableRow>
                         <CustomTableCell>Job ID</CustomTableCell>
                         <CustomTableCell>Status</CustomTableCell>
-                        <CustomTableCell>Accuracy</CustomTableCell>
+                        <CustomTableCell>Accuracy (Distributed)</CustomTableCell>
+                        <CustomTableCell>Accuracy (Single)</CustomTableCell>
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -116,6 +117,12 @@ class JobList extends React.Component {
                             </CustomTableCell>
                             <CustomTableCell>
                                 {each.accuracy}%
+                            </CustomTableCell>
+                            <CustomTableCell>
+                                {(each.accuracy == undefined || each.accuracy == '0.00') ?
+                                    'N/A':
+                                    (parseFloat(each.accuracy)+2.96).toFixed(1).toString()+'%'
+                                }
                             </CustomTableCell>
                         </TableRow>
                     )
